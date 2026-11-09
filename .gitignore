@@ -11,8 +11,8 @@ demos/rag_corpus.js
 # Handouts (sources are the .md files)
 workshops/*.html
 workshops/*.pdf
-data/**/*.html
-data/**/*.pdf
+knowledge_base/*.html
+knowledge_base/*.pdf
 
 # Site assembled for GitHub Pages
 _site/
