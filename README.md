@@ -2,25 +2,28 @@
 
 One-day hands-on training for teachers and educators in healthcare and medicine: how modern AI works (neural networks, LLMs, context, RAG, agents) and how to use it (web search, memory, knowledge bases, course design).
 
-- **Slides:** `slides.html` (reveal.js). Press `S` for speaker notes (timings and demo instructions), `F` for full screen, `Esc` for the overview.
+- **Slides:** `slides.html` (reveal.js). Press `F` for full screen, `Esc` for the overview.
 - **Language:** English · **Length:** full day · **Participants:** own laptops, free accounts
 
 ## Programme
 
-| Time | Session | Material |
+**Theory** (slides and demos)
+
+| Part | Content | Demos |
 |---|---|---|
-| 9:00 | Welcome, icebreaker | slides |
-| 9:15 | **Part 1: How AI works** (neural networks, training, LLMs, tokens, temperature, context) | demos: network, training, letters, token, temperature, **context** |
-| 10:30 | Break | |
-| 10:45 | **Part 2: From manual context to RAG** | demo: **rag** |
-| 11:30 | **Part 3: Tools and agents** | demo: **agent** |
-| 12:00 | Best practices (check sources, visual and interactive explanations, patient data, writing requests) | |
-| 12:30 | Lunch | |
-| 13:30 | **Workshop 1: Web search and memory** | `workshops/01_search_memory` |
-| 14:40 | **Workshop 2: Knowledge base (NotebookLM)** | `workshops/02_knowledge_base`, `knowledge_base/` |
-| 15:40 | Break | |
-| 15:55 | **Workshop 3: Designing a course** | `workshops/03_course_design`, `knowledge_base/diabetes_course_notes` |
-| 16:40 | Wrap-up, action plan | `workshops/04_cheat_sheet` |
+| Welcome | Content of the day, icebreaker | |
+| 1. How AI works | Neural networks, training, LLMs, tokens, temperature, knowledge cutoff, context | network, training, letters, token, temperature, **context** |
+| 2. Context, RAG, tools and agents | Manual context, RAG and its limits, agents, ways for a model to “know”, chat app vs API vs open-weight models, comparing LLMs (LMArena, costs) | **rag**, **agent** |
+| 3. Best practices | Check the sources, protect patient data, give context | |
+
+**Practice** (participants' own laptops)
+
+| Workshop | Content | Handout |
+|---|---|---|
+| 1. Web search and memory | Questions after the training cutoff, without then with web search; how memory works | `workshops/01_search_memory` |
+| 2. AI knowledge base | NotebookLM on the St Aldric documents, then on your own; a literature review from scratch | `workshops/02_knowledge_base`, `knowledge_base/` |
+| 3. Designing a course | Outcomes and session plan, iterate on the plan, create materials, iterate | `workshops/03_course_design` |
+| Wrap-up | Summary | `workshops/04_cheat_sheet` |
 
 ## Contents
 
@@ -35,7 +38,7 @@ demos/               interactive demos (offline, no API key needed)
   agent              step-by-step agent loop (literature search, admin email with human approval, knowledge base)
 make_corpus.py       knowledge_base/*.md → demos/rag_corpus.js
 workshops/           handouts: 00 setup (send before the day), 01–03 workshops, 04 cheat sheet
-knowledge_base/      4 documents of the fictional "St Aldric School of Health Sciences" (used by the demos and Workshops 2–3)
+knowledge_base/      4 documents of the fictional "St Aldric School of Health Sciences" (used by the demos and Workshop 2)
 handout.css          style of the handouts
 index.md             landing page of the website
 .github/workflows/   GitHub Actions: build and deploy to GitHub Pages
@@ -53,18 +56,14 @@ python3 build.py --pdf   # same, plus PDFs of the handouts (headless Chrome/Chro
 python3 build.py --pdf --site   # same, plus _site/ (the website)
 ```
 
-The first build downloads reveal.js into `vendor/`.
+The first build downloads reveal.js into `vendor/`. Requirements: Python 3 + numpy, pandoc, and Chrome or Chromium for the PDFs.
 
 ## Website (GitHub Pages)
 
 Every push to `main` runs `.github/workflows/deploy.yml`, which builds everything and publishes `_site/`: a landing page, the slides, the demos and the handout PDFs. One-time setup on GitHub: **Settings → Pages → Source: GitHub Actions**.
 
-Requirements: Python 3 + numpy, pandoc, and Chrome or Chromium for the PDFs.
-
 ## Before the session
 
-- [ ] Send `workshops/00_setup.pdf` to participants one week before.
-- [ ] Check the current free-tier limits of the tools (NotebookLM, assistants with web search and memory) and where the web search and memory settings are in each assistant. They change often.
-- [ ] Give participants the PDFs from `knowledge_base/` (USB stick, shared drive or LMS).
-- [ ] Prepare the two live demos from the best-practices section (visual explanation, interactive page) in your preferred assistant.
-- [ ] Check the room's Wi-Fi with 20+ laptops. The slides and demos work offline; the workshops need internet.
+- Send `workshops/00_setup.pdf` to participants one week before.
+- Check the current free-tier limits of the tools (NotebookLM, deep research modes, assistants with web search and memory) and where the web search and memory settings are in each assistant. They change often.
+- Give participants the PDFs from `knowledge_base/` (USB stick, shared drive or LMS).
