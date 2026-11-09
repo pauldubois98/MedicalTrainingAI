@@ -2,8 +2,37 @@
 
 One-day hands-on training for teachers and educators in healthcare and medicine: how modern AI works (neural networks, LLMs, context, RAG, agents) and how to use it (web search, memory, knowledge bases, course design).
 
-- **Slides:** `slides.html` (reveal.js). Press `F` for full screen, `Esc` for the overview.
+- **Website:** <https://pauldubois98.github.io/MedicalTrainingAI/>
+- **Slides:** [online](https://pauldubois98.github.io/MedicalTrainingAI/slides.html) (reveal.js). Press `F` for full screen, `Esc` for the overview.
 - **Language:** English · **Length:** full day · **Participants:** own laptops, free accounts
+
+## Links
+
+**Slides and demos**
+
+- [Slides](https://pauldubois98.github.io/MedicalTrainingAI/slides.html)
+- Demos: [train a neural network by hand](https://pauldubois98.github.io/MedicalTrainingAI/demos/network.html) · [automatic training](https://pauldubois98.github.io/MedicalTrainingAI/demos/training.html) · [predict the next letter](https://pauldubois98.github.io/MedicalTrainingAI/demos/letters.html) · [token by token](https://pauldubois98.github.io/MedicalTrainingAI/demos/token.html) · [temperature](https://pauldubois98.github.io/MedicalTrainingAI/demos/temperature.html) · [the importance of context](https://pauldubois98.github.io/MedicalTrainingAI/demos/context.html) · [RAG step by step](https://pauldubois98.github.io/MedicalTrainingAI/demos/rag.html) · [an agent at work](https://pauldubois98.github.io/MedicalTrainingAI/demos/agent.html)
+
+**Handouts**
+
+| Handout | PDF | Web |
+|---|---|---|
+| Before the day: setup | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/workshops/00_setup.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/workshops/00_setup.html) |
+| Workshop 1: Web search and memory | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/workshops/01_search_memory.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/workshops/01_search_memory.html) |
+| Workshop 2: AI knowledge base | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/workshops/02_knowledge_base.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/workshops/02_knowledge_base.html) |
+| Workshop 3: Designing a course | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/workshops/03_course_design.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/workshops/03_course_design.html) |
+| Cheat sheet | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/workshops/04_cheat_sheet.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/workshops/04_cheat_sheet.html) |
+
+**Knowledge base** (fictional St Aldric School of Health Sciences, for Workshop 2 and the demos)
+
+| Document | PDF | Web |
+|---|---|---|
+| OSCE regulations 2026 | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/osce_regulations_2026.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/osce_regulations_2026.html) |
+| Clinical placement handbook | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/clinical_placement_handbook.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/clinical_placement_handbook.html) |
+| Hand hygiene course notes | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/hand_hygiene_course_notes.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/hand_hygiene_course_notes.html) |
+| Diabetes course notes | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/diabetes_course_notes.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/diabetes_course_notes.html) |
+
+**Repository:** [source code](https://github.com/pauldubois98/MedicalTrainingAI) · [deployment runs (GitHub Actions)](https://github.com/pauldubois98/MedicalTrainingAI/actions)
 
 ## Programme
 
@@ -60,7 +89,7 @@ The first build downloads reveal.js into `vendor/`. Requirements: Python 3 + num
 
 ## Website (GitHub Pages)
 
-Every push to `main` runs `.github/workflows/deploy.yml`, which builds everything and publishes `_site/`: a landing page, the slides, the demos and the handout PDFs. One-time setup on GitHub: **Settings → Pages → Source: GitHub Actions**.
+Every push to `main` runs `.github/workflows/deploy.yml`, which builds everything and publishes `_site/` to <https://pauldubois98.github.io/MedicalTrainingAI/>: a landing page, the slides, the demos and the handout PDFs. Follow the runs in the [Actions tab](https://github.com/pauldubois98/MedicalTrainingAI/actions). One-time setup on GitHub: **Settings → Pages → Source: GitHub Actions** (already done).
 
 ## Before the session
 
