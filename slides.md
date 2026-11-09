@@ -241,13 +241,13 @@ lang: en
 ## Workshop 3: Designing a course
 
 <div class="cards c4">
-<div class="card t"><div class="e">🎯</div><b>Outcomes</b>what students will be able to do</div>
-<div class="card o"><div class="e">🗓️</div><b>Session plan</b>timing, activities, assessment</div>
-<div class="card g"><div class="e">🧩</div><b>Materials</b>clinical case, quiz, slides</div>
-<div class="card r"><div class="e">🔎</div><b>Review</b>check every fact against your sources</div>
+<div class="card t"><div class="e">🎯</div><b>1. Outcomes &amp; plan</b>define the outcomes, ask for a session plan</div>
+<div class="card o"><div class="e">🔁</div><b>2. Iterate on the plan</b>before any material is written</div>
+<div class="card g"><div class="e">🧩</div><b>3. Materials</b>slides, interactive pages, exercises, quizzes</div>
+<div class="card r"><div class="e">🔁</div><b>4. Iterate on the material</b>until it is good enough</div>
 </div>
 
-<div class="msg">Example: a 2-hour session on hypoglycaemia · Handout: workshops/03_course_design</div>
+<div class="msg">Handout: workshops/03_course_design</div>
 
 ## Summary
 
