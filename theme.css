@@ -124,3 +124,15 @@
 .reveal table.agenda td:first-child { color: var(--muted); font-weight: bold; width: 90px; }
 .reveal .cards.c4 .card { font-size: .7em; }
 .reveal ol.retenir li { margin: 8px 0; }
+.reveal .cards.tight { margin: 10px auto; gap: 16px; }
+.reveal .cards.tight .card { padding: 14px 14px; }
+.reveal .cards.tight .card .e { font-size: 2em; }
+/* Best practices: figure on the left, cards on the right */
+.reveal .bp { display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; align-items: start; max-width: 1200px; margin: 0 auto; text-align: left; }
+.reveal .bp img { width: 100%; }
+.reveal .bp .msg { text-align: center; font-size: .7em; }
+.reveal .bp .card { font-size: .62em; margin-bottom: 14px; padding: 14px 18px; }
+.reveal .bp .card b { display: inline; }
+.reveal .bp .card.t b { display: block; margin-bottom: .3em; }
+.reveal .bp .rc { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; }
+.reveal .bp .k { font-weight: bold; color: var(--orange-d); }

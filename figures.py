@@ -203,28 +203,36 @@ def chat_as_text():
 
 
 def knowledge_cutoff():
-    s = SVG(1600, 600)
-    y = 300
-    x0, xc, xn = 100, 1000, 1480
-    s.rect(x0, y - 40, xc - x0, 80, fill=ORANGE_L, rx=40)
-    s.text((x0 + xc) / 2, y, "Training data: books, articles, websites…", fs=32, weight="bold")
-    s.rect(xc, y - 40, xn - xc, 80, fill=WHITE, stroke=MUTED, sw=3, dash="12 10", rx=40)
-    s.text((xc + xn) / 2, y, "the model knows nothing", fs=30, color=MUTED, italic=True)
-    s.line(xc, y - 120, xc, y + 120, color=VIOLET, sw=6)
-    s.text(xc - 15, y - 100, "✂️ cutoff date", fs=32, color=VIOLET, weight="bold", anchor="end")
-    s.text(xn, y + 110, "today", fs=30, color=INK, weight="bold", anchor="end")
-    for x, e, t in [(1160, "📋", "New\nregulations"), (1330, "📰", "Recent\nstudies")]:
-        s.text(x, y - 130, e, fs=56)
-        s.line(x, y - 90, x, y - 45, color=MUTED, sw=3, dash="6 6")
-        s.text(x, y + 100, t, fs=24, color=MUTED)
-    s.cbox(400, 510, 560, 90, "🔒 Private documents: never seen", fill=RED_L, fs=30, weight="bold", color=RED)
-    s.cbox(1100, 510, 620, 90, "💡 Solution: put them in the context", fill=GREEN_L, fs=30, weight="bold", color=GREEN)
+    """Two sections: what the model saw during training vs what it never saw."""
+    s = SVG(1600, 560)
+    # seen
+    s.rect(40, 30, 700, 500, fill=GREEN_L, rx=28)
+    s.text(390, 95, "✅ Seen during training", fs=40, weight="bold", color=GREEN)
+    s.text(390, 140, "frozen at the cutoff date", fs=26, color=MUTED, italic=True)
+    for i, (e, t) in enumerate([("📚", "Books, textbooks"), ("📄", "Published articles"),
+                                ("🌐", "Public websites"), ("📋", "Guidelines up to the cutoff")]):
+        y = 220 + i * 82
+        s.text(130, y, e, fs=48)
+        s.text(190, y, t, fs=32, anchor="start")
+    # unseen
+    s.rect(860, 30, 700, 500, fill=RED_L, rx=28)
+    s.text(1210, 95, "❌ Never seen", fs=40, weight="bold", color=RED)
+    s.text(1210, 140, "the model may still invent an answer", fs=26, color=MUTED, italic=True)
+    groups = [("🕒", "After the cutoff", "new guidelines, recent studies"),
+              ("🔒", "Private", "your regulations, course materials, emails")]
+    for i, (e, t, d) in enumerate(groups):
+        y = 240 + i * 160
+        s.text(950, y + 10, e, fs=56)
+        s.text(1010, y - 10, t, fs=34, weight="bold", anchor="start")
+        s.text(1010, y + 38, d, fs=26, color=MUTED, anchor="start")
+    s.arrow(750, 280, 850, 280, sw=6, head=22)
+    s.text(800, 250, "time", fs=22, color=MUTED, italic=True)
     s.save(out("knowledge_cutoff.svg"))
 
 
 # ================================================================ Part 2: from manual context to RAG
 def manual_context():
-    s = SVG(1600, 620)
+    s = SVG(1600, 440)
     steps = [("🔎", "1. Search", "PubMed, guidelines,\ncourse files…"),
              ("📋", "2. Copy & paste", "into the\nconversation"),
              ("💬", "3. Ask", "questions about\nthe documents")]
@@ -236,10 +244,8 @@ def manual_context():
         s.text(x + 200, 285, d, fs=26, color=MUTED)
         if i < 2:
             s.arrow(x + 410, 190, x + 470, 190, sw=6, head=22)
-    s.text(800, 400, "✓ Works well for a few documents", fs=34, color=GREEN, weight="bold")
-    probs = ["⏱ slow and repetitive", "📏 limited context size", "❓ which documents to choose?"]
-    for i, p in enumerate(probs):
-        s.cbox(310 + i * 490, 520, 450, 90, p, fill=RED_L, fs=30, color=RED, weight="bold")
+    s.text(800, 405, "✓ Works well for a few documents", fs=34, color=GREEN, weight="bold")
+    # the drawbacks are revealed as fragments in slides.md
     s.save(out("manual_context.svg"))
 
 
@@ -345,18 +351,22 @@ def knowledge_sources():
 
 # ================================================================ Best practices
 def fake_reference():
-    s = SVG(1600, 700)
-    s.rect(120, 60, 1360, 250, fill=WHITE, stroke=MUTED, sw=3)
-    s.text(160, 115, "Martin L, Okafor C, Lindqvist S. Effect of high-fidelity simulation on", fs=32, anchor="start")
-    s.text(160, 165, "nursing students' clinical judgement: a randomized controlled trial.", fs=32, anchor="start")
-    s.text(160, 215, "Journal of Nursing Education. 2021;60(4):212-219.", fs=32, anchor="start", italic=True)
-    s.text(160, 265, "doi:10.3928/01484834-20210322-99", fs=32, anchor="start", color=BLUE)
-    notes = [(260, "✓ plausible authors", GREEN), (640, "✓ realistic title", GREEN),
-             (1000, "✓ real journal", GREEN), (1330, "✗ article does not exist", RED)]
-    for x, t, c in notes:
-        s.text(x, 360, t, fs=28, color=c, weight="bold")
-    s.cbox(800, 470, 1100, 90, "🔎 Check: DOI → doi.org · title → PubMed / Google Scholar", fill=ORANGE_L, fs=32, weight="bold")
-    s.text(800, 590, "Fabricated example, made for this course", fs=26, color=MUTED, italic=True)
+    """Narrow layout: shown in the left column of the best-practices slide."""
+    s = SVG(1000, 640)
+    s.rect(20, 20, 960, 330, fill=WHITE, stroke=MUTED, sw=3)
+    lines = [("Martin L, Okafor C, Lindqvist S.", False, INK),
+             ("Effect of high-fidelity simulation on nursing", False, INK),
+             ("students' clinical judgement: a randomized", False, INK),
+             ("controlled trial. J Nurs Educ. 2021;60(4):212-219.", True, INK),
+             ("doi:10.3928/01484834-20210322-99", False, BLUE)]
+    for i, (t, it, c) in enumerate(lines):
+        s.text(50, 80 + i * 58, t, fs=34, anchor="start", italic=it, color=c)
+    notes = [(260, 400, "✓ plausible authors", GREEN), (740, 400, "✓ realistic title", GREEN),
+             (260, 450, "✓ real journal", GREEN), (740, 450, "✗ article does not exist", RED)]
+    for x, y, t, c in notes:
+        s.text(x, y, t, fs=32, color=c, weight="bold")
+    s.cbox(500, 540, 960, 80, "🔎 DOI → doi.org · title → PubMed / Scholar", fill=ORANGE_L, fs=32, weight="bold")
+    s.text(500, 620, "Fabricated example, made for this course", fs=24, color=MUTED, italic=True)
     s.save(out("fake_reference.svg"))
 
 
