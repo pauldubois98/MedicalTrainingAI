@@ -24,7 +24,7 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REVEAL_VERSION = "5.1.0"
-HANDOUTS = ["workshops/*.md", "data/knowledge_base/*.md", "data/emails/*.md", "data/references/*.md"]
+HANDOUTS = ["workshops/*.md", "data/knowledge_base/*.md", "data/references/*.md"]
 
 
 def fetch_reveal():

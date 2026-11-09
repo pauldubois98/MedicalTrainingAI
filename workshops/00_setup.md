@@ -26,7 +26,7 @@ Some hospitals and universities restrict or provide specific AI tools (for examp
 ## Bring along (optional, but recommended)
 
 - **2 to 5 documents from your own teaching**: course notes, a guideline you teach, a programme handbook, an exam regulation. Use **non-confidential** documents only, in PDF or Word format.
-- **One or two repetitive emails** you often write (with all names and personal data removed).
+- **A session you would like to create or redesign**: its topic, your students' level, and your course notes for it (Workshop 3).
 
 <div class="warn">
 

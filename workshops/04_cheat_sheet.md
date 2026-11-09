@@ -4,7 +4,7 @@ title: "Cheat sheet — Using AI as a healthcare educator"
 
 # Cheat sheet: using AI as a healthcare educator
 
-## How it works, in 4 lines
+## How AI works
 
 1. An **LLM predicts text**, token by token: its answer is the most *plausible* continuation, not necessarily the *true* one.
 2. It only knows what it learned during **training** (frozen at a cutoff date) and what is in its **context** (the conversation).
@@ -29,7 +29,7 @@ title: "Cheat sheet — Using AI as a healthcare educator"
 - **Interactive:** “Create an interactive page / quiz / flashcards on [topic] for my students.”
 - **Literature:** “Find systematic reviews from the last 10 years on [topic], with DOI/PMID and links.”
 - **Appraisal:** “Act as a critical reviewer of this article: risks of bias, limits, questions to ask.”
-- **Emails:** “Summarise this thread and list the actions (who, what, deadline).” · “Rewrite this in a calmer tone.”
+- **Course design:** “Write 5 measurable learning outcomes for [session]” · “Turn these outcomes into a 2-hour session plan, as a table” · “Is every outcome taught and assessed?”
 - **Teaching material:** “Turn these lecture notes into a clinical case with 3 decision points.”
 
 ## Checklist before using an answer
@@ -40,13 +40,6 @@ title: "Cheat sheet — Using AI as a healthcare educator"
 - [ ] Did I remove all **patient and personal data** before using the tool?
 - [ ] Would I be comfortable signing this with **my name**?
 
-## Red flags
-
-- References without a DOI or link, or very “convenient” ones that match your question perfectly
-- Precise numbers without a source
-- A confident answer to a question about **recent** or **local** information
-- An answer that changes when you ask the same question again
-
 ## Tools mentioned today
 
 | Need | Tools (free version available) |
@@ -55,4 +48,4 @@ title: "Cheat sheet — Using AI as a healthcare educator"
 | Literature search | PubMed, Consensus, Elicit, Semantic Scholar, Google Scholar |
 | References | Zotero |
 | Knowledge base (RAG) | NotebookLM; Projects in Claude / ChatGPT |
-| Email | Your email client's templates; Copilot (Outlook), Gemini (Gmail) if provided by your institution |
+| Course design | Any assistant, with your course notes in a project (Claude, ChatGPT) or a NotebookLM notebook |

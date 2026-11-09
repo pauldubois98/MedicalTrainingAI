@@ -21,7 +21,7 @@ lang: en
 <table class="agenda">
 <tr><td>1</td><td>Workshop: Web search and memory</td></tr>
 <tr><td>2</td><td>Workshop: AI knowledge base</td></tr>
-<tr><td>3</td><td>Workshop: Emails</td></tr>
+<tr><td>3</td><td>Workshop: Designing a course</td></tr>
 </table>
 </div>
 </div>
@@ -235,15 +235,16 @@ lang: en
 
 <div class="msg">Handout: workshops/02_knowledge_base</div>
 
-## Workshop 3: Emails
+## Workshop 3: Designing a course
 
-<div class="cards c3">
-<div class="card t"><div class="e">✍️</div><b>Draft</b>professional emails</div>
-<div class="card o"><div class="e">🎚️</div><b>Adapt</b>the tone to the audience</div>
-<div class="card g"><div class="e">🔁</div><b>Reuse</b>templates for repetitive emails</div>
+<div class="cards c4">
+<div class="card t"><div class="e">🎯</div><b>Outcomes</b>what students will be able to do</div>
+<div class="card o"><div class="e">🗓️</div><b>Session plan</b>timing, activities, assessment</div>
+<div class="card g"><div class="e">🧩</div><b>Materials</b>clinical case, quiz, slides</div>
+<div class="card r"><div class="e">🔎</div><b>Review</b>check every fact against your sources</div>
 </div>
 
-<div class="msg">Handout: workshops/03_emails</div>
+<div class="msg">Example: a 2-hour session on hypoglycaemia · Handout: workshops/03_course_design</div>
 
 ## Summary
 

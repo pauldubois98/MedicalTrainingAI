@@ -1,6 +1,6 @@
 # AI Tools for Healthcare Educators
 
-One-day hands-on training for teachers and educators in healthcare and medicine: how modern AI works (neural networks, LLMs, context, RAG, agents) and how to use it (web search, memory, knowledge bases, emails).
+One-day hands-on training for teachers and educators in healthcare and medicine: how modern AI works (neural networks, LLMs, context, RAG, agents) and how to use it (web search, memory, knowledge bases, course design).
 
 - **Slides:** `slides.html` (reveal.js). Press `S` for speaker notes (timings and demo instructions), `F` for full screen, `Esc` for the overview.
 - **Language:** English · **Length:** full day · **Participants:** own laptops, free accounts
@@ -19,7 +19,7 @@ One-day hands-on training for teachers and educators in healthcare and medicine:
 | 13:30 | **Workshop 1: Web search and memory** | `workshops/01_search_memory` (optional extra: `data/references/`) |
 | 14:40 | **Workshop 2: Knowledge base (NotebookLM)** | `workshops/02_knowledge_base`, `data/knowledge_base/` |
 | 15:40 | Break | |
-| 15:55 | **Workshop 3: Emails** | `workshops/03_emails`, `data/emails/` |
+| 15:55 | **Workshop 3: Designing a course** | `workshops/03_course_design`, `data/knowledge_base/diabetes_course_notes` |
 | 16:40 | Wrap-up, action plan | `workshops/04_cheat_sheet` |
 
 ## Contents
@@ -37,7 +37,6 @@ make_corpus.py       data/knowledge_base/*.md → demos/rag_corpus.js
 workshops/           handouts: 00 setup (send before the day), 01–03 workshops, 04 cheat sheet
 data/
   knowledge_base/    4 documents of the fictional "St Aldric School of Health Sciences" (used by the demos and Workshop 2)
-  emails/            fictional emails for Workshop 3
   references/        reference-check exercise + instructor key (do not distribute the key)
 handout.css          style of the handouts
 index.md             landing page of the website
@@ -70,6 +69,6 @@ Requirements: Python 3 + numpy, pandoc, and Chrome or Chromium for the PDFs.
 
 - [ ] Send `workshops/00_setup.pdf` to participants one week before.
 - [ ] Check the current free-tier limits of the tools (NotebookLM, assistants with web search and memory) and where the web search and memory settings are in each assistant. They change often.
-- [ ] Give participants the PDFs from `data/knowledge_base/`, `data/emails/` and `data/references/reference_check_exercise.pdf` (USB stick, shared drive or LMS).
+- [ ] Give participants the PDFs from `data/knowledge_base/` and `data/references/reference_check_exercise.pdf` (USB stick, shared drive or LMS).
 - [ ] Prepare the two live demos from the best-practices section (visual explanation, interactive page) in your preferred assistant.
 - [ ] Check the room's Wi-Fi with 20+ laptops. The slides and demos work offline; the workshops need internet.
