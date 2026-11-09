@@ -25,8 +25,7 @@ One-day hands-on training: how modern AI works, and how to use it for literature
 
 | Document | |
 |---|---|
-| OSCE regulations 2026 | [PDF](data/knowledge_base/osce_regulations_2026.pdf) |
-| Clinical placement handbook | [PDF](data/knowledge_base/clinical_placement_handbook.pdf) |
-| Hand hygiene course notes | [PDF](data/knowledge_base/hand_hygiene_course_notes.pdf) |
-| Diabetes course notes | [PDF](data/knowledge_base/diabetes_course_notes.pdf) |
-| Reference-check exercise (Workshop 1, optional) | [PDF](data/references/reference_check_exercise.pdf) |
+| OSCE regulations 2026 | [PDF](knowledge_base/osce_regulations_2026.pdf) |
+| Clinical placement handbook | [PDF](knowledge_base/clinical_placement_handbook.pdf) |
+| Hand hygiene course notes | [PDF](knowledge_base/hand_hygiene_course_notes.pdf) |
+| Diabetes course notes | [PDF](knowledge_base/diabetes_course_notes.pdf) |

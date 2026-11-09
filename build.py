@@ -2,10 +2,10 @@
 """Builds all course materials.
 
   1. figures/*.svg            (figures.py)
-  2. demos/rag_corpus.js      (make_corpus.py, from data/knowledge_base/*.md)
+  2. demos/rag_corpus.js      (make_corpus.py, from knowledge_base/*.md)
   3. slides.html              (pandoc + reveal.js)
-  4. handouts: workshops/*.md, data/**/*.md  →  .html (+ .pdf with --pdf, via headless Chrome)
-  5. with --site: _site/ (what GitHub Pages serves; instructor-only files left out)
+  4. handouts: workshops/*.md, knowledge_base/*.md  →  .html (+ .pdf with --pdf, via headless Chrome)
+  5. with --site: _site/ (what GitHub Pages serves)
 
 reveal.js is downloaded into vendor/ on the first run.
 
@@ -24,7 +24,7 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REVEAL_VERSION = "5.1.0"
-HANDOUTS = ["workshops/*.md", "data/knowledge_base/*.md", "data/references/*.md"]
+HANDOUTS = ["workshops/*.md", "knowledge_base/*.md"]
 
 
 def fetch_reveal():
@@ -90,7 +90,6 @@ def handouts(pdf):
 
 SITE_FILES = ["slides.html", "theme.css", "figures", "demos", "vendor/reveal.js/dist",
               "vendor/reveal.js/plugin"]
-PRIVATE = "KEY_instructor"   # files containing this are never published
 
 
 def site():
@@ -107,7 +106,7 @@ def site():
         for md in glob.glob(os.path.join(HERE, pattern)):
             for ext in (".html", ".pdf"):
                 f = md[:-3] + ext
-                if os.path.exists(f) and PRIVATE not in f:
+                if os.path.exists(f):
                     dst = os.path.join(out, os.path.relpath(f, HERE))
                     os.makedirs(os.path.dirname(dst), exist_ok=True)
                     shutil.copy2(f, dst)

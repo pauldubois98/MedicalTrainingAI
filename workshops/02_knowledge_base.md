@@ -17,7 +17,7 @@ title: "Workshop 2 — Your own AI knowledge base"
 ## Exercise 1: (Fake) St Aldric knowledge base
 
 1. Go to [notebooklm.google.com](https://notebooklm.google.com) and create a new notebook.
-2. Add the 4 St Aldric (fake) documents as sources (PDF files from the course materials, folder data/knowledge_base):
+2. Add the 4 St Aldric (fake) documents as sources (PDF files from the course materials, folder knowledge_base):
    OSCE regulations · Placement handbook · Hand hygiene notes · Diabetes notes.
 3. Ask these questions and **click on each citation** to read the source passage:
    - *How many stations are there in the OSCE, and what do I need to pass?*
