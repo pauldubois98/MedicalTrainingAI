@@ -4,7 +4,7 @@ title: "Workshop 2 — Your own AI knowledge base"
 
 # Workshop 2: Your own AI knowledge base (RAG)
 
-**Duration:** 60 min · **Tool:** NotebookLM (free, Google account). *Alternatives: Projects in Claude or ChatGPT, or custom GPTs (some features need a paid plan).*
+**Tool:** NotebookLM (free, Google account). *Alternatives: Projects in Claude or ChatGPT, or custom GPTs (some features need a paid plan).*
 
 **Goal:** build an AI assistant that answers questions **from your documents only**, with a citation for every answer, and see where it works and where it fails.
 
@@ -14,10 +14,10 @@ title: "Workshop 2 — Your own AI knowledge base"
 
 </div>
 
-## Exercise 1: The St Aldric knowledge base (20 min)
+## Exercise 1: (Fake) St Aldric knowledge base
 
 1. Go to [notebooklm.google.com](https://notebooklm.google.com) and create a new notebook.
-2. Add the 4 St Aldric documents as sources (PDF files from the course materials, folder data/knowledge_base):
+2. Add the 4 St Aldric (fake) documents as sources (PDF files from the course materials, folder data/knowledge_base):
    OSCE regulations · Placement handbook · Hand hygiene notes · Diabetes notes.
 3. Ask these questions and **click on each citation** to read the source passage:
    - *How many stations are there in the OSCE, and what do I need to pass?*
@@ -31,7 +31,7 @@ title: "Workshop 2 — Your own AI knowledge base"
 
 **Discuss:** does it say when it doesn't know? Does it correct the false premise? Does it add information that is not in the sources?
 
-## Exercise 2: Your own knowledge base (25 min)
+## Exercise 2: Your own knowledge base
 
 Create a new notebook with **your own non-confidential documents**: course notes, a guideline you teach, a programme handbook, open-access articles…
 
@@ -48,7 +48,7 @@ say so clearly and suggest who to contact. Always cite the passage.
 Use simple language and short paragraphs.
 ```
 
-## Exercise 3: Debrief (15 min)
+## Exercise 3: Debrief
 
 - Which questions worked well? Which ones failed, and why (missing document, passage not found, ambiguous question)?
 - **Quality of the sources:** an outdated document gives outdated answers. Who will keep the knowledge base up to date?
@@ -60,9 +60,9 @@ Use simple language and short paragraphs.
 
 </div>
 
-## Ideas for your teaching
+## Use cases
 
-- A **module assistant** that answers students' practical questions from the module handbook and timetable.
-- A **guideline navigator** for a set of clinical guidelines you teach.
-- A **revision companion**: from your lecture notes, generate quizzes and flashcards, then check them.
-- A **literature notebook** for a thesis you supervise: the student uploads the papers, and every answer cites a paper.
+- **Module assistant** that answers students' practical questions from the module handbook and timetable.
+- **Guideline navigator** for a set of clinical guidelines.
+- **Revision companion** from lecture notes, generate quizzes/flashcards.
+- **Literature review** uploads papers, ask questions about them (highlights the exact part where the answer is).
