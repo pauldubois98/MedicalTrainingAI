@@ -275,7 +275,7 @@ def rag_pipeline():
     s.cbox(1430, 430, 240, 140, "🧠 LLM", fill=VIOLET, color=WHITE, fs=40, weight="bold")
     s.raw(f'<path d="M200,495 L200,625 L1360,625" stroke="{MUTED}" stroke-width="4" stroke-dasharray="10 8" fill="none"/>')
     s.arrow(1360, 625, 1360, 505, sw=4, head=18, dash="10 8")
-    s.text(780, 600, "the question is sent too", fs=24, color=MUTED, italic=True)
+    # s.text(780, 600, "the question is sent too", fs=24, color=MUTED, italic=True)
     s.arrow(1480, 505, 1480, 685, sw=6, head=22)
     s.cbox(1060, 740, 900, 100, "✅ Answer grounded in the passages, with citations [1] [2]", fill=GREEN_L,
            fs=32, color=GREEN, weight="bold")

@@ -38,7 +38,7 @@
 <body>
 <div class="row">
   <select id="scenario"></select>
-  <button id="toggle" class="alt">📄 Add the document to the context</button>
+  <button id="toggle" class="alt">📄 Add to context</button>
   <button id="go">Generate ▶</button>
 </div>
 <div class="cols">
@@ -102,7 +102,7 @@ function renderCtx() {
   const words = (withDoc ? S.doc.replace(/<[^>]+>/g, "") : "").split(/\s+/).length + S.q.split(/\s+/).length + 10;
   document.getElementById("tokcount").textContent = `≈ ${Math.round(words * 1.3)} tokens`;
   toggle.classList.toggle("on", withDoc);
-  toggle.textContent = withDoc ? "📄 Remove the document" : "📄 Add the document to the context";
+  toggle.textContent = withDoc ? "📄 Remove from context" : "📄 Add to context";
   stop(); answer.innerHTML = ""; badge.className = ""; badge.style.display = "";
 }
 function stop() { if (timer) clearInterval(timer); timer = null; go.disabled = false; }
