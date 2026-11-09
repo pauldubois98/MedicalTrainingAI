@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>An AI agent using tools</title>
+<!-- Step-by-step trace of an agent loop: the model decides to call a tool, the result is added to its context,
+     and it continues until it can answer. Traces are pre-written and illustrative (no real model or search is called). -->
+<link rel="stylesheet" href="common.css">
+<style>
+  body { gap: 8px; padding: 8px 16px; }
+  select { font: inherit; font-size: 19px; padding: 6px; border-radius: 8px; max-width: 620px; }
+  button { font-size: 20px; padding: 8px 18px; }
+  .grid { flex: 1; display: grid; grid-template-columns: 400px 1fr; gap: 16px; min-height: 0; }
+  #left { display: flex; flex-direction: column; gap: 8px; }
+  #tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool { font-size: 15px; background: var(--light); border-radius: 20px; padding: 4px 11px; border: 2px solid transparent; transition: all .3s; }
+  .tool.used { border-color: var(--violet); background: var(--violet-l); }
+  .tool.now { background: var(--violet); color: #fff; transform: scale(1.08); }
+  h3 { margin: 0; font-size: 17px; font-weight: normal; color: var(--muted); }
+  h3 b { color: var(--ink); }
+  svg { width: 100%; flex: 1; }
+  .node rect { transition: all .3s; }
+  #trace { overflow: auto; display: flex; flex-direction: column; gap: 6px; border: 3px solid var(--light); border-radius: 14px; padding: 8px 10px; }
+  .m { font-size: 16.5px; line-height: 1.38; border-radius: 10px; padding: 6px 11px; animation: pop .35s ease; }
+  .m .who { font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; display: block; color: var(--muted); }
+  .m.user { background: var(--orange-l); }
+  .m.think { background: #fff; border: 2px dashed #c9cfdb; color: var(--muted); font-style: italic; }
+  .m.call { background: var(--violet); color: #fff; font-family: monospace; font-size: 15.5px; }
+  .m.call .who { color: #f0d9f0; }
+  .m.result { background: var(--violet-l); font-size: 15px; }
+  .m.result .who { color: var(--violet); }
+  .m.approve { background: #f7dcd8; border: 2px solid var(--red); }
+  .m.approve .who { color: var(--red); }
+  .m.answer { background: #d9f0e3; }
+  .m.answer .who { color: var(--green); }
+  .m ul { margin: 2px 0 0 18px; padding: 0; }
+  #stepInfo { font-size: 17px; color: var(--muted); }
+  .note { font-size: 13.5px; color: var(--muted); font-style: italic; }
+  @keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="row">
+  <select id="scenario"></select>
+  <button id="next">Next step ▶</button>
+  <button id="auto" class="alt">⏵ Auto</button>
+  <button id="reset" class="alt">↺</button>
+  <span id="stepInfo"></span>
+</div>
+<div class="grid">
+  <div id="left">
+    <h3><b>Tools the model is allowed to use</b></h3>
+    <div id="tools"></div>
+    <svg viewBox="0 0 400 330" id="loop"></svg>
+    <div class="note">Illustrative trace, written for teaching. It shows how an agent works; the search results are not real.</div>
+  </div>
+  <div id="trace"></div>
+</div>
+
+<script>
+const TOOLS = {
+  web_search: "🌐 web_search", pubmed_search: "📚 pubmed_search", read_article: "📄 read_article",
+  kb_search: "🗂️ knowledge_base_search", calendar: "📅 calendar", directory: "👥 student_directory",
+  email_draft: "✉️ draft_email", email_send: "📤 send_email",
+};
+// stage: where we are in the loop (user, llm, tool, answer). Each step adds one message to the context.
+const SCENARIOS = [
+  { label: "1. Literature: simulation training for nursing students",
+    tools: ["web_search", "pubmed_search", "read_article", "kb_search"],
+    steps: [
+      ["user", "user", "Find recent evidence on simulation-based training for nursing students, and summarise it with references I can check."],
+      ["llm", "think", "I need recent, peer-reviewed sources. I will search PubMed for systematic reviews from the last 5 years."],
+      ["tool", "call", "pubmed_search(query=\"simulation training nursing students\", type=\"systematic review\", years=\"2021-2026\")", "pubmed_search"],
+      ["llm", "result", "<b>5 results</b> (title, journal, year, PMID)<ul><li>Systematic review A: simulation and clinical skills, 32 studies</li><li>Meta-analysis B: simulation and student self-confidence, 18 trials</li><li>Review C: virtual vs. manikin simulation…</li><li>…</li></ul>"],
+      ["llm", "think", "Reviews A and B look the most relevant. I should read their abstracts before summarising, not rely on titles only."],
+      ["tool", "call", "read_article(pmid=\"A\")", "read_article"],
+      ["llm", "result", "<b>Abstract A</b>: 32 studies, simulation improved knowledge and clinical skills compared with traditional teaching; evidence quality moderate; high heterogeneity between studies."],
+      ["tool", "call", "read_article(pmid=\"B\")", "read_article"],
+      ["llm", "result", "<b>Abstract B</b>: 18 randomised trials, significant gain in self-confidence; effect on long-term skill retention unclear."],
+      ["answer", "answer", "Recent reviews suggest that simulation improves nursing students' knowledge, clinical skills and self-confidence compared with traditional teaching [A, B]. Evidence quality is moderate and studies are heterogeneous; the long-term effect is unclear [B]. <b>References with PMIDs below: please check them.</b>"],
+    ] },
+  { label: "2. Admin: room change for tomorrow's anatomy lab",
+    tools: ["calendar", "directory", "email_draft", "email_send", "web_search"],
+    steps: [
+      ["user", "user", "Tomorrow's Year 2 anatomy lab is moved to room B12. Please inform the students and their tutors."],
+      ["llm", "think", "First I need the exact event: date, time and current room."],
+      ["tool", "call", "calendar.find_event(name=\"Anatomy lab\", group=\"Year 2\", date=\"tomorrow\")", "calendar"],
+      ["llm", "result", "Anatomy lab, Year 2, Group A, <b>Tuesday 14:00–17:00</b>, room A04, teacher: Dr Martin."],
+      ["tool", "call", "student_directory.get_list(group=\"Year 2 Group A\", include=\"tutors\")", "directory"],
+      ["llm", "result", "48 students, 3 tutors (mailing list: y2-group-a@st-aldric.example)."],
+      ["tool", "call", "draft_email(to=\"y2-group-a@…\", subject=\"Room change: anatomy lab, Tuesday 14:00\", …)", "email_draft"],
+      ["llm", "result", "Draft created: <i>“Dear students, tomorrow's anatomy lab (Tuesday 14:00–17:00) will take place in <b>room B12</b> instead of A04. Everything else is unchanged. Best regards, Dr Martin”</i>"],
+      ["user", "approve", "✋ <b>Human approval required</b> before sending to 51 people. The teacher reads the draft, checks the room and the time, and clicks “Send”."],
+      ["tool", "call", "send_email(draft_id=\"…\")", "email_send"],
+      ["answer", "answer", "Done: the email was sent to the 48 students and 3 tutors of Year 2 Group A. Would you like me to update the calendar event too?"],
+    ] },
+  { label: "3. Our documents: can students wear a smartwatch during the OSCE?",
+    tools: ["kb_search", "web_search", "pubmed_search"],
+    steps: [
+      ["user", "user", "Can students wear a smartwatch during the OSCE?"],
+      ["llm", "think", "This depends on our own regulations, not on general knowledge. I will search the school's knowledge base rather than the web."],
+      ["tool", "call", "knowledge_base_search(query=\"smartwatch OSCE\", top_k=3)", "kb_search"],
+      ["llm", "result", "<b>[1] OSCE regulations 2026–27, §8 Conduct</b>: “Mobile phones and smartwatches must be left in the lockers provided…”<br><b>[2] Placement handbook, §7 Dress code</b>: “…no wristwatch…”"],
+      ["answer", "answer", "No. Smartwatches, like mobile phones, must be left in the lockers provided (OSCE regulations, §8) [1]. More generally, in clinical areas no wristwatch is worn (“bare below the elbows”) [2]."],
+    ] },
+];
+
+const sel = document.getElementById("scenario"), trace = document.getElementById("trace"), svg = document.getElementById("loop");
+SCENARIOS.forEach((s, i) => sel.add(new Option(s.label, i)));
+let k = 0, timer = null;
+const WHO = { user: "User", think: "Model (reasoning)", call: "Model → tool call", result: "Tool result (added to the context)",
+              approve: "Human in the loop", answer: "Model → final answer" };
+
+function drawLoop(stage) {
+  const box = (x, y, w, h, label, on, color) =>
+    `<g class="node"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${on ? color : "#eef1f6"}" stroke="${color}" stroke-width="${on ? 0 : 2}"/>` +
+    `<text x="${x + w / 2}" y="${y + h / 2}" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="bold" fill="${on && color !== "#ffc000" ? "#fff" : "#1f2a44"}">${label}</text></g>`;
+  const arr = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#6b7489" stroke-width="3" marker-end="url(#ah)"/>`;
+  svg.innerHTML = `<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7489"/></marker></defs>` +
+    box(130, 5, 140, 50, "👤 User", stage === "user", "#ffc000") +
+    arr(200, 57, 200, 108) +
+    box(110, 110, 180, 70, "🧠 LLM", stage === "llm", "#800080") +
+    `<path d="M290,130 C350,130 350,130 350,200" fill="none" stroke="#6b7489" stroke-width="3" marker-end="url(#ah)"/>` +
+    `<text x="372" y="160" font-size="15" fill="#6b7489" text-anchor="middle">call</text>` +
+    box(290, 205, 105, 55, "🛠️ Tool", stage === "tool", "#800080") +
+    `<path d="M290,240 C220,240 210,215 210,185" fill="none" stroke="#6b7489" stroke-width="3" marker-end="url(#ah)"/>` +
+    `<text x="250" y="270" font-size="15" fill="#6b7489" text-anchor="middle">result</text>` +
+    arr(150, 182, 120, 262) +
+    box(20, 265, 180, 55, "✅ Answer", stage === "answer", "#2e8b57");
+}
+function render() {
+  const S = SCENARIOS[sel.value], steps = S.steps.slice(0, k);
+  const used = new Set(steps.filter(s => s[3]).map(s => s[3])), now = k && S.steps[k - 1][3];
+  document.getElementById("tools").innerHTML = S.tools.map(t =>
+    `<span class="tool${used.has(t) ? " used" : ""}${now === t ? " now" : ""}">${TOOLS[t]}</span>`).join("");
+  trace.innerHTML = steps.map(([, type, txt]) => `<div class="m ${type}"><span class="who">${WHO[type]}</span>${txt}</div>`).join("") ||
+    `<div class="note" style="font-size:17px">Press “Next step” to follow the agent.</div>`;
+  trace.scrollTop = trace.scrollHeight;
+  drawLoop(k ? S.steps[k - 1][0] : null);
+  document.getElementById("stepInfo").textContent = `step ${k} / ${S.steps.length}`;
+  document.getElementById("next").disabled = k >= S.steps.length;
+}
+function next() { const S = SCENARIOS[sel.value]; if (k < S.steps.length) { k++; render(); } else stopAuto(); }
+function stopAuto() { clearInterval(timer); timer = null; document.getElementById("auto").textContent = "⏵ Auto"; }
+document.getElementById("next").onclick = e => { e.currentTarget.blur(); next(); };
+document.getElementById("auto").onclick = e => {
+  e.currentTarget.blur();
+  if (timer) return stopAuto();
+  timer = setInterval(next, 1800); e.currentTarget.textContent = "⏸ Pause";
+};
+document.getElementById("reset").onclick = e => { e.currentTarget.blur(); stopAuto(); k = 0; render(); };
+sel.onchange = () => { sel.blur(); stopAuto(); k = 0; render(); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === "ArrowRight") next(); });
+render();
+</script>
+</body>
+</html>

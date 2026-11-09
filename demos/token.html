@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Token by token</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  #text { font-size: 36px; line-height: 1.45; min-height: 120px; background: var(--light);
+    border-radius: 16px; padding: 14px 24px; }
+  #text .new { background: var(--violet-l); color: var(--violet); font-weight: bold; border-radius: 8px;
+    padding: 0 6px; animation: pop .5s ease; }
+  #text .cursor { display: inline-block; width: 16px; height: 36px; background: var(--violet);
+    vertical-align: middle; margin-left: 6px; animation: blink 1s infinite; }
+  @keyframes pop { from { transform: scale(1.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  h3 { margin: 0; font-size: 24px; color: var(--muted); font-weight: normal; }
+  h3 b { color: var(--orange-d); }
+  .bars > div { cursor: pointer; }
+  .bars .lab:hover, .bars .lab.hover { color: var(--violet); font-weight: bold; }
+  .bars .track.hover .fill { background: var(--violet); }
+  #info { font-size: 22px; color: var(--muted); }
+  /* buttons pinned at the bottom */
+  #controls { margin-top: auto; }
+</style>
+</head>
+<body>
+<div id="text"></div>
+<h3><b>Next token:</b></h3>
+<div class="bars" id="bars"></div>
+<div class="row" id="controls">
+  <button id="best">Most likely →</button>
+  <button id="undo" class="alt">↶ Undo</button>
+  <button id="reset" class="alt">Restart</button>
+  <span id="info"></span>
+</div>
+
+<script>
+// Illustrative mini "model": probabilities depend on the last 2 tokens (or the last one).
+// Not a real LLM, just enough to explore different paths.
+const START = ["The", "patient", "was", "treated", "with"];
+const M = {
+  "treated with": {antibiotics: 58, paracetamol: 17, insulin: 13, chemotherapy: 8, surgery: 4},
+  "with antibiotics": {for: 46, ".": 34, and: 20},
+  "with paracetamol": {for: 50, ".": 30, and: 20},
+  "with insulin": {".": 45, and: 30, after: 25},
+  "with chemotherapy": {".": 50, and: 30, after: 20},
+  "with surgery": {".": 60, after: 40},
+  "for a": {urinary: 45, fever: 30, week: 25},
+  "a urinary": {tract: 100},
+  "after the": {diagnosis: 60, surgery: 40},
+  "and the": {fever: 50, symptoms: 50},
+  "The fever": {resolved: 70, dropped: 30},
+  "Her fever": {resolved: 70, dropped: 30},
+  "the fever": {resolved: 70, dropped: 30},
+  "The symptoms": {improved: 70, resolved: 30},
+  "Her symptoms": {improved: 70, resolved: 30},
+  "the symptoms": {improved: 70, resolved: 30},
+  "were reported": {".": 100},
+  "was treated": {with: 100},
+  "for": {a: 40, three: 25, pneumonia: 20, fever: 15},
+  "three": {days: 70, weeks: 30},
+  "days": {".": 85, ",": 15},
+  "weeks": {".": 85, ",": 15},
+  "tract": {infection: 100},
+  "infection": {".": 80, and: 20},
+  "pneumonia": {".": 85, and: 15},
+  "fever": {".": 70, and: 30},
+  "week": {".": 100},
+  "after": {surgery: 50, the: 50},
+  "diagnosis": {".": 100},
+  "surgery": {".": 100},
+  ",": {and: 60, but: 40},
+  "but": {the: 60, no: 40},
+  "and": {the: 40, discharged: 35, monitored: 25},
+  "symptoms": {improved: 70, ".": 30},
+  "improved": {".": 60, within: 40},
+  "resolved": {within: 60, ".": 40},
+  "dropped": {within: 100},
+  "within": {"48": 60, a: 40},
+  "48": {hours: 100},
+  "hours": {".": 100},
+  "discharged": {home: 70, after: 30},
+  "home": {".": 100},
+  "monitored": {closely: 70, for: 30},
+  "closely": {".": 100},
+  ".": {The: 45, She: 25, Her: 20, No: 10},
+  "The": {fever: 40, patient: 40, symptoms: 20},
+  "patient": {recovered: 45, was: 35, reported: 20},
+  "She": {recovered: 50, was: 30, reported: 20},
+  "Her": {fever: 50, symptoms: 50},
+  "recovered": {fully: 60, ".": 40},
+  "fully": {".": 100},
+  "was": {discharged: 50, monitored: 30, treated: 20},
+  "treated": {with: 100},
+  "reported": {no: 70, mild: 30},
+  "no": {side: 100},
+  "No": {side: 60, complications: 40},
+  "side": {effects: 100},
+  "effects": {".": 100},
+  "mild": {nausea: 100},
+  "nausea": {".": 100},
+  "complications": {were: 100},
+  "were": {reported: 100},
+  "a": {week: 50, fever: 50},
+  "the": {fever: 50, symptoms: 50},
+};
+const FALLBACK = {".": 80, ",": 20};
+const MAX_SENTENCES = 4;
+
+let words = START.slice(), nStart = START.length, lastNew = false;
+const text = document.getElementById("text"), bars = document.getElementById("bars");
+const info = document.getElementById("info"), best = document.getElementById("best");
+
+function dist() {
+  const n = words.length;
+  const d = M[words[n - 2] + " " + words[n - 1]] || M[words[n - 1]] || FALLBACK;
+  const tot = Object.values(d).reduce((a, b) => a + b, 0);
+  return Object.entries(d).map(([t, p]) => [t, Math.round(100 * p / tot)]).sort((a, b) => b[1] - a[1]);
+}
+function isPunct(w) { return w === "." || w === ","; }
+function finished() { return words.slice(nStart).filter(w => w === ".").length >= MAX_SENTENCES; }
+
+function render() {
+  let html = "";
+  words.forEach((w, i) => {
+    const sep = (i === 0 || isPunct(w)) ? "" : " ";
+    const isNew = lastNew && i === words.length - 1;
+    html += sep + (isNew ? `<span class="new">${w}</span>` : w);
+  });
+  const done = finished();
+  text.innerHTML = html + (done ? "" : '<span class="cursor"></span>');
+  best.disabled = done;
+  if (done) { bars.innerHTML = ""; info.textContent = ""; return; }
+  const D = dist();
+  bars.innerHTML = D.map(([t, p], i) =>
+    `<div class="lab" data-i="${i}">${t}</div><div class="track" data-i="${i}"><div class="fill" style="width:${p}%"></div></div><div class="pct" data-i="${i}">${p} %</div>`
+  ).join("");
+  bars.querySelectorAll("[data-i]").forEach(el => {
+    const i = +el.dataset.i;
+    el.onclick = () => choose(D[i][0]);
+    el.onmouseenter = () => bars.querySelectorAll(`[data-i="${i}"]`).forEach(e => e.classList.add("hover"));
+    el.onmouseleave = () => bars.querySelectorAll(`[data-i="${i}"]`).forEach(e => e.classList.remove("hover"));
+  });
+  info.textContent = `${words.length - nStart} token(s) generated`;
+}
+function choose(t) { words.push(t); lastNew = true; render(); }
+best.onclick = () => choose(dist()[0][0]);
+document.getElementById("undo").onclick = () => { if (words.length > nStart) { words.pop(); lastNew = false; render(); } };
+document.getElementById("reset").onclick = () => { words = START.slice(); lastNew = false; render(); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" && !best.disabled) best.click(); });
+render();
+</script>
+</body>
+</html>

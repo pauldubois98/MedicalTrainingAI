@@ -146,4 +146,8 @@ When developing the training materials:
 
 The overall objective is to help healthcare educators understand modern AI capabilities and, more importantly, learn how to integrate these tools into their teaching, research, and administrative activities.
 
-
+Read `AGENT.md`, make a plan on the material to create, and tools to create them.
+Language: English
+Length: a full day
+Participants' tools: free accounts, but can have licence if needed
+Laptops: participants will have their own laptops

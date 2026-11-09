@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The importance of context</title>
+<!-- Same question, with or without a document in the model's context.
+     Answers are pre-written (no real model is called), so the demo always works offline. -->
+<link rel="stylesheet" href="common.css">
+<style>
+  body { gap: 8px; }
+  select { font: inherit; font-size: 21px; padding: 6px; border-radius: 8px; max-width: 640px; }
+  .cols { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 0; }
+  .panel { border-radius: 16px; padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .panel h3 { margin: 0; font-size: 20px; color: var(--muted); font-weight: normal; }
+  .panel h3 b { color: var(--ink); }
+  #ctxPanel { background: var(--light); }
+  #ansPanel { border: 3px solid var(--light); }
+  .msg { font-size: 19px; line-height: 1.4; border-radius: 10px; padding: 8px 12px; background: #fff; }
+  .msg .who { font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; }
+  .msg.sys { color: var(--muted); font-style: italic; }
+  .msg.doc { background: var(--violet-l); border: 2px dashed var(--violet); overflow: auto; max-height: 230px;
+    font-size: 16px; animation: pop .4s ease; }
+  .msg.doc .who { color: var(--violet); }
+  .msg.q { background: var(--orange-l); }
+  #answer { font-size: 22px; line-height: 1.45; flex: 1; overflow: auto; }
+  #answer .cursor { display: inline-block; width: 11px; height: 22px; background: var(--violet); vertical-align: middle; margin-left: 4px; animation: blink 1s infinite; }
+  #badge { font-size: 19px; font-weight: bold; border-radius: 10px; padding: 8px 12px; display: none; }
+  #badge.bad { display: block; background: #f7dcd8; color: var(--red); }
+  #badge.meh { display: block; background: var(--orange-l); color: var(--orange-d); }
+  #badge.good { display: block; background: #d9f0e3; color: var(--green); }
+  .tokcount { font-size: 15px; color: var(--muted); }
+  @keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  #toggle.on { background: var(--violet); color: #fff; }
+  mark { background: #ffe699; border-radius: 4px; padding: 0 2px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <select id="scenario"></select>
+  <button id="toggle" class="alt">📄 Add the document to the context</button>
+  <button id="go">Generate ▶</button>
+</div>
+<div class="cols">
+  <div class="panel" id="ctxPanel">
+    <h3><b>What the model sees</b> (its context) <span class="tokcount" id="tokcount"></span></h3>
+    <div id="ctx" style="display:flex; flex-direction:column; gap:8px; min-height:0; overflow:auto"></div>
+  </div>
+  <div class="panel" id="ansPanel">
+    <h3><b>The model's answer</b></h3>
+    <div id="answer"></div>
+    <div id="badge"></div>
+  </div>
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    label: "1. Our new OSCE regulations (adopted Oct. 2026)",
+    q: "How many stations are there in our 2026–2027 OSCE, and what do I need to pass?",
+    docName: "OSCE Examination Regulations 2026–2027 (St Aldric School, fictional), v3, 2 October 2026",
+    doc: `<b>3. Exam format.</b> The OSCE consists of <mark>10 stations</mark>. Each station lasts <mark>8 minutes</mark>, preceded by 2 minutes of reading time outside the room. One additional rest station is included in each circuit. […]<br><br>
+<b>4. Passing criteria.</b> To pass the OSCE, a student must obtain an <mark>overall score of at least 50%</mark> and <mark>pass at least 7 of the 10 stations</mark>. A critical patient-safety error at any station […] results in that station being failed, regardless of the score obtained.`,
+    without: "Your OSCE will most likely include 12 stations of 10 minutes each. To pass, you generally need an overall score of at least 60%, and you must not fail more than two stations.",
+    withoutBadge: ["bad", "⚠ Invented: it sounds plausible, but every number is wrong. The model has never seen this document."],
+    with: "According to the 2026–2027 regulations (§3 and §4), the OSCE has 10 stations of 8 minutes each, preceded by 2 minutes of reading time. To pass, you need an overall score of at least 50% and you must pass at least 7 of the 10 stations. Be careful: a critical patient-safety error fails the station, whatever your score.",
+    withBadge: ["good", "✓ Correct, and it cites its source (§3, §4). You can check it."],
+  },
+  {
+    label: "2. Needle-stick injury on placement",
+    q: "I'm a student on placement and I just had a needle-stick injury. What should I do?",
+    docName: "Clinical Placement Handbook 2026–2027 (St Aldric School, fictional), §5",
+    doc: `<b>5. Needle-stick and sharps injuries.</b> In case of a needle-stick or sharps injury: encourage the wound to bleed gently, wash it with soap and running water, do not scrub or suck the wound, and cover it with a waterproof dressing. <mark>Report the injury immediately to the person in charge of the ward</mark> and <mark>go to Occupational Health (or to the Emergency Department out of hours)</mark> without delay, because post-exposure prophylaxis is most effective when started as early as possible, <mark>ideally within 1 hour</mark>. <mark>Complete an incident report on the same day.</mark>`,
+    without: "Encourage the wound to bleed, wash it with soap and water and cover it. Report the incident to your supervisor and follow your hospital's occupational health procedure, as you may need blood tests or preventive treatment.",
+    withoutBadge: ["meh", "≈ Correct in general, but generic: it knows nothing about your school's procedure."],
+    with: "Act immediately: encourage the wound to bleed gently, wash it with soap and running water (do not scrub or suck it) and cover it. Report it right away to the person in charge of the ward, then go straight to Occupational Health, or to the Emergency Department out of hours: post-exposure treatment works best within 1 hour. Finally, complete an incident report today (Handbook §5).",
+    withBadge: ["good", "✓ Specific to your institution, with the right people, timing and paperwork."],
+  },
+  {
+    label: "3. General knowledge: first-line drug for type 2 diabetes",
+    q: "What is the usual first-line drug for type 2 diabetes?",
+    docName: "Course notes: Diabetes mellitus essentials (St Aldric School, fictional), §3",
+    doc: `<b>3. First-line treatment of type 2 diabetes.</b> Lifestyle measures (diet, physical activity, weight loss) are the foundation of treatment. When drug treatment is needed, <mark>metformin is the usual first-line medicine</mark>, unless contraindicated or not tolerated. Gastrointestinal side effects are common at the start of treatment.`,
+    without: "Metformin is the usual first-line drug for type 2 diabetes, in addition to lifestyle measures such as diet, physical activity and weight loss, unless it is contraindicated or not tolerated.",
+    withoutBadge: ["good", "✓ Correct without any document: this is stable knowledge, widely present in the training data."],
+    with: "Metformin, alongside lifestyle measures (diet, physical activity, weight loss), unless it is contraindicated or not tolerated. Your course notes add that digestive side effects are common at the start of treatment (§3).",
+    withBadge: ["good", "✓ Same answer, now with a source. Adding context does not hurt."],
+  },
+];
+
+const sel = document.getElementById("scenario"), toggle = document.getElementById("toggle"), go = document.getElementById("go");
+const ctx = document.getElementById("ctx"), answer = document.getElementById("answer"), badge = document.getElementById("badge");
+SCENARIOS.forEach((s, i) => sel.add(new Option(s.label, i)));
+let withDoc = false, timer = null;
+
+function renderCtx() {
+  const S = SCENARIOS[sel.value];
+  let h = `<div class="msg sys"><span class="who">Instructions</span>You are a helpful assistant for staff and students.</div>`;
+  if (withDoc) h += `<div class="msg doc"><span class="who">📄 Document: ${S.docName}</span>${S.doc}</div>`;
+  h += `<div class="msg q"><span class="who">Question</span>${S.q}</div>`;
+  ctx.innerHTML = h;
+  const words = (withDoc ? S.doc.replace(/<[^>]+>/g, "") : "").split(/\s+/).length + S.q.split(/\s+/).length + 10;
+  document.getElementById("tokcount").textContent = `≈ ${Math.round(words * 1.3)} tokens`;
+  toggle.classList.toggle("on", withDoc);
+  toggle.textContent = withDoc ? "📄 Remove the document" : "📄 Add the document to the context";
+  stop(); answer.innerHTML = ""; badge.className = ""; badge.style.display = "";
+}
+function stop() { if (timer) clearInterval(timer); timer = null; go.disabled = false; }
+function generate() {
+  stop();
+  const S = SCENARIOS[sel.value], words = (withDoc ? S.with : S.without).split(" ");
+  const [cls, txt] = withDoc ? S.withBadge : S.withoutBadge;
+  let i = 0; badge.className = ""; go.disabled = true;
+  timer = setInterval(() => {
+    i++;
+    answer.innerHTML = words.slice(0, i).join(" ") + (i < words.length ? '<span class="cursor"></span>' : "");
+    if (i >= words.length) { stop(); badge.className = cls; badge.textContent = txt; }
+  }, 70);
+}
+sel.onchange = () => { sel.blur(); renderCtx(); };
+toggle.onclick = () => { withDoc = !withDoc; toggle.blur(); renderCtx(); };
+go.onclick = () => { go.blur(); generate(); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" && !go.disabled) generate(); });
+renderCtx();
+</script>
+</body>
+</html>
