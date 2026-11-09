@@ -21,7 +21,7 @@ lang: en
 <div class="card o">
 <b style="font-size:1.1em; margin-bottom:.4em">🌙 Afternoon: practise</b>
 <table class="agenda">
-<tr><td>13:30</td><td>Workshop 1: Bibliography</td></tr>
+<tr><td>13:30</td><td>Workshop 1: Web search and memory</td></tr>
 <tr><td>14:40</td><td>Workshop 2: Your own AI knowledge base</td></tr>
 <tr><td>15:40</td><td><span class="muted">Break</span></td></tr>
 <tr><td>15:55</td><td>Workshop 3: Emails</td></tr>
@@ -185,15 +185,15 @@ lang: en
 
 ## Hands-on workshops {.divider}
 
-## Workshop 1: Bibliography and literature review
+## Workshop 1: Web search and memory
 
-<div class="cards c3">
-<div class="card t"><div class="e">🔎</div><b>Search</b>an AI tool with web search</div>
-<div class="card o"><div class="e">📑</div><b>Summarise &amp; compare</b>key papers in a table</div>
-<div class="card r"><div class="e">✅</div><b>Check</b>every reference</div>
+<div class="cards c3 tight">
+<div class="card r"><div class="e">🚫</div><b>Without web search</b>ask about recent events: does it know, or invent?</div>
+<div class="card g"><div class="e">🌐</div><b>With web search</b>same questions, with sources to check</div>
+<div class="card o"><div class="e">🧠</div><b>Memory</b>what is saved, where, and how to delete it</div>
 </div>
 
-<div class="msg">Handout: workshops/01_bibliography</div>
+<div class="msg">Handout: workshops/01_search_memory</div>
 
 ## Workshop 2: Your own AI knowledge base
 
