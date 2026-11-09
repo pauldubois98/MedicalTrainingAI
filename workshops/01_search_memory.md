@@ -10,11 +10,11 @@ title: "Workshop 1 — Web search and memory"
 
 <div class="tip">
 
-Menus change often. If you cannot find a setting, ask your neighbour or the trainer, or simply ask the assistant: “How do I turn off web search in this app?”
+GUI change often. If you cannot find a setting, ask on Google (e.g.: “How do I turn off web search in this app?”).
 
 </div>
 
-## Exercise 1: A model without web search
+## Exercise 1: Model without web search
 
 ### Step 1: turn web search off
 
@@ -63,7 +63,7 @@ A model's knowledge is **frozen at its training cutoff**. Without a tool, it can
 
 </div>
 
-## Exercise 2: The same model with web search
+## Exercise 2: Models with web search
 
 ### Step 1: turn web search back on
 
@@ -93,7 +93,7 @@ For **two** of the answers, open at least **two** of the links:
 
 </div>
 
-## Exercise 3: How memory works
+## Exercise 3: Models with memory
 
 Many assistants can **remember** things about you from one conversation to the next. Let us see what that really means.
 
