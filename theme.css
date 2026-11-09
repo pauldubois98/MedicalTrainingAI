@@ -133,9 +133,19 @@
 .reveal .bp .msg { text-align: center; font-size: .7em; }
 .reveal .bp .card { font-size: .62em; margin-bottom: 14px; padding: 14px 18px; }
 .reveal .bp .card b { display: inline; }
-.reveal .bp .card.t b { display: block; margin-bottom: .3em; }
 .reveal .bp .rc { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; }
 .reveal .bp .k { font-weight: bold; color: var(--orange-d); }
 /* Cards whose text is centred vertically (one-line labels next to two-line ones) */
 .reveal .cards.vc .card { display: flex; align-items: center; justify-content: center; }
 .reveal .cards.vc .card b { margin: 0; }
+/* Foundation model vs API */
+.reveal .fm { display: inline-flex; align-items: baseline; gap: 14px; background: var(--violet); color: #fff;
+  border-radius: 20px; padding: 14px 30px; font-size: .9em; margin-top: 6px; }
+.reveal .fm span { font-size: .75em; opacity: .9; }
+.reveal .fm-arrows { font-size: 1.3em; color: var(--muted); line-height: 1.2; letter-spacing: .4em; }
+/* Comparing LLMs */
+.reveal ol.arena { margin: .4em 0 0 1.2em; padding: 0; font-size: .95em; }
+.reveal ol.arena li { margin: 4px 0; }
+.reveal table.costs { font-size: .95em; margin: .4em 0; border-collapse: collapse; width: 100%; }
+.reveal table.costs td { border: 0; border-bottom: 1px solid #e3d9a8; padding: 6px 8px; vertical-align: top; }
+.reveal table.costs td:first-child { font-weight: bold; white-space: nowrap; }

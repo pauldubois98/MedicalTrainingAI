@@ -4,29 +4,24 @@ subtitle: "How modern AI works, and how to use it for teaching, research and adm
 lang: en
 ---
 
-## Programme of the day
+## Content
 
 <div class="cards c2" style="text-align:left; align-items:start">
 <div class="card t">
-<b style="font-size:1.1em; margin-bottom:.4em">☀️ Morning: understand</b>
+<b style="font-size:1.1em; margin-bottom:.4em">Theory</b>
 <table class="agenda">
-<tr><td>9:00</td><td>Welcome</td></tr>
-<tr><td>9:15</td><td>How AI works</td></tr>
-<tr><td>10:30</td><td><span class="muted">Break</span></td></tr>
-<tr><td>10:45</td><td>From manual context to RAG</td></tr>
-<tr><td>11:30</td><td>Tools and agents</td></tr>
-<tr><td>12:00</td><td>Best practices</td></tr>
+<tr><td>1</td><td>How AI learning works</td></tr>
+<tr><td>2</td><td>From manual context to RAG</td></tr>
+<tr><td>3</td><td>Tools and agents</td></tr>
+<tr><td>4</td><td>Best practices</td></tr>
 </table>
 </div>
 <div class="card o">
-<b style="font-size:1.1em; margin-bottom:.4em">🌙 Afternoon: practise</b>
+<b style="font-size:1.1em; margin-bottom:.4em">Practice</b>
 <table class="agenda">
-<tr><td>13:30</td><td>Workshop 1: Web search and memory</td></tr>
-<tr><td>14:40</td><td>Workshop 2: Your own AI knowledge base</td></tr>
-<tr><td>15:40</td><td><span class="muted">Break</span></td></tr>
-<tr><td>15:55</td><td>Workshop 3: Emails</td></tr>
-<tr><td>16:40</td><td>Your action plan</td></tr>
-<tr><td>17:00</td><td><span class="muted">End</span></td></tr>
+<tr><td>1</td><td>Workshop: Web search and memory</td></tr>
+<tr><td>2</td><td>Workshop: AI knowledge base</td></tr>
+<tr><td>3</td><td>Workshop: Emails</td></tr>
 </table>
 </div>
 </div>
@@ -142,8 +137,8 @@ lang: en
 <div class="msg fragment">Tools: NotebookLM, Claude Projects, ChatGPT Projects…</div>
 
 <div class="fragment">
-<div class="cards c4 tight">
-<div class="card r"><b>🔎 The search can miss</b>the right passage</div>
+<div class="cards c3 tight">
+<div class="card r"><b>🔎 Search can miss</b>the right passage</div>
 <div class="card r"><b>🗑️ Garbage in,<br>garbage out</b>outdated or wrong documents give wrong answers</div>
 <div class="card g"><b>✅ Citations make answers checkable</b>read the source if unsure</div>
 </div>
@@ -167,17 +162,52 @@ lang: en
 
 ![](figures/knowledge_sources.svg){.fig}
 
+## One model, several ways to use it
+
+<div class="fm">🧠 <b>Foundation model</b><span>trained once, at great cost: GPT, Claude, Gemini, Llama, Mistral…</span></div>
+<div class="fm-arrows">↙ &nbsp; ↓ &nbsp; ↘</div>
+
+<div class="cards c3 tight">
+<div class="card t fragment"><div class="e">💬</div><b>Chat app</b>ChatGPT, Claude.ai, Gemini…<br><br><span class="muted">for everyone</span></div>
+<div class="card o fragment"><div class="e">🔌</div><b>API</b>software sends text,<br>gets text back<br>pay per token, no interface<br><span class="muted">for developers and institutional tools</span></div>
+<div class="card g fragment"><div class="e">💻</div><b>AI Agent</b>LLM with access to a virtual computer<br><br><span class="muted">for long complex tasks</span></div>
+</div>
+
+## Comparing LLMs
+
+<div class="cards c2 tight" style="text-align:left">
+<div class="card o">
+<div class="e">💯</div><b>Quality</b>
+<span>via LMArena ⚔️</span>
+<ol class="arena">
+<li>Ask any question at <a href="https://lmarena.ai">lmarena.ai</a></li>
+<li>Two <em>anonymous</em> models answer</li>
+<li>You vote for the better answer</li>
+<li>Millions of votes → a public leaderboard</li>
+</ol>
+</div>
+<div class="card t">
+<div class="e">💶</div><b>Costs</b>
+<table class="costs">
+<tr><td>Free tier</td><td>0 €, limited use</td></tr>
+<tr><td>Subscription</td><td>≈ 20 € / month</td></tr>
+<tr><td>API</td><td>per million tokens:<br>from &lt;1 € to ~10 of €</td></tr>
+</table>
+<span class="muted" style="font-size:.85em">1 million tokens ≈ 750,000 words</span>
+</div>
+</div>
+
 ## Best practices
 
 <div class="bp">
 <div>
 <img src="figures/fake_reference.svg" alt="A fabricated reference">
-<div class="msg fragment">In an old (2023) study, 55% of references produced by <span style="white-space:nowrap">GPT-3.5</span> were fabricated, 18% for GPT-4.</div>
+<div class="msg">In an old (2023) study, 55% of references produced by <span style="white-space:nowrap">GPT-3.5</span> were fabricated, 18% for GPT-4.</div>
 </div>
 <div class="fragment">
-<div class="card r fragment"><b>🚫 Data</b>: Never give patient-identifiable data to a public AI tool</div>
-<div class="card g fragment"><b>✅ Role</b>: Add “You are an experienced nursing educator…” to the prompt.</div>
-<div class="card t fragment"><b>💡 Target</b>: Add “explain for Year 1 students” to the prompt.</div>
+<div class="card r"><b>🚫 Data</b>: Never give patient-identifiable data to a public AI tool</div>
+<div class="card g"><b>✅ Role</b>: Add “You are an experienced nursing educator…” to the prompt.</div>
+<div class="card t"><b>💡 Target</b>: Add “explain to teenager" to the prompt.</div>
 </div>
 </div>
 
