@@ -11,9 +11,8 @@ lang: en
 <b style="font-size:1.1em; margin-bottom:.4em">Theory</b>
 <table class="agenda">
 <tr><td>1</td><td>How AI learning works</td></tr>
-<tr><td>2</td><td>From manual context to RAG</td></tr>
-<tr><td>3</td><td>Tools and agents</td></tr>
-<tr><td>4</td><td>Best practices</td></tr>
+<tr><td>2</td><td>Context, RAG, tools & Agents</td></tr>
+<tr><td>3</td><td>Best practices</td></tr>
 </table>
 </div>
 <div class="card o">
@@ -24,6 +23,10 @@ lang: en
 <tr><td>3</td><td>Workshop: Designing a course</td></tr>
 </table>
 </div>
+</div>
+
+<div class="big-q" style="font-size:1em">
+   Note that AI evolves <em>fast</em>, this may soon be out of date.
 </div>
 
 ## What do you already use AI for? {.question}
