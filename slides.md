@@ -117,8 +117,7 @@ lang: en
 
 ![](figures/manual_context.svg){.fig-s}
 
-<div class="cards c3 tight">
-<!-- this is not properly centered vertically, fix it -->
+<div class="cards c3 tight vc">
 <div class="card r fragment"><b>⏱ Slow and repetitive</b></div>
 <div class="card r fragment"><b>📏 Limited context size</b></div>
 <div class="card r fragment"><b>❓ Which documents to choose?</b></div>

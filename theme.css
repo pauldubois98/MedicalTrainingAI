@@ -136,3 +136,6 @@
 .reveal .bp .card.t b { display: block; margin-bottom: .3em; }
 .reveal .bp .rc { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; }
 .reveal .bp .k { font-weight: bold; color: var(--orange-d); }
+/* Cards whose text is centred vertically (one-line labels next to two-line ones) */
+.reveal .cards.vc .card { display: flex; align-items: center; justify-content: center; }
+.reveal .cards.vc .card b { margin: 0; }
