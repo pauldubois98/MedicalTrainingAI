@@ -113,11 +113,12 @@ lang: en
 
 ## From manual context to RAG {.divider}
 
-## The manual method
+## Manual method
 
 ![](figures/manual_context.svg){.fig-s}
 
 <div class="cards c3 tight">
+<!-- this is not properly centered vertically, fix it -->
 <div class="card r fragment"><b>⏱ Slow and repetitive</b></div>
 <div class="card r fragment"><b>📏 Limited context size</b></div>
 <div class="card r fragment"><b>❓ Which documents to choose?</b></div>
@@ -139,14 +140,13 @@ lang: en
 <div class="card g"><div class="e">🏫</div><b>Institutional documents</b>Regulations, handbooks, course materials: a 24/7 assistant for students</div>
 </div>
 
-<div class="msg fragment">Tools: NotebookLM, Claude Projects, ChatGPT Projects… → Workshop 2</div>
+<div class="msg fragment">Tools: NotebookLM, Claude Projects, ChatGPT Projects…</div>
 
 <div class="fragment">
 <div class="cards c4 tight">
-<div class="card r"><b>🔎 The search can miss</b>the right passage, and then the model guesses</div>
-<div class="card r"><b>🗑️ Garbage in, garbage out</b>outdated or wrong documents give wrong answers</div>
-<div class="card r"><b>🎭 It can still hallucinate</b>or misread a passage</div>
-<div class="card g"><b>✅ Citations make answers checkable</b>click and read the source!</div>
+<div class="card r"><b>🔎 The search can miss</b>the right passage</div>
+<div class="card r"><b>🗑️ Garbage in,<br>garbage out</b>outdated or wrong documents give wrong answers</div>
+<div class="card g"><b>✅ Citations make answers checkable</b>read the source if unsure</div>
 </div>
 </div>
 
@@ -168,9 +168,7 @@ lang: en
 
 ![](figures/knowledge_sources.svg){.fig}
 
-## Best practices {.divider}
-
-## Check the sources, protect the data
+## Best practices
 
 <div class="bp">
 <div>
@@ -178,10 +176,9 @@ lang: en
 <div class="msg fragment">In an old (2023) study, 55% of references produced by <span style="white-space:nowrap">GPT-3.5</span> were fabricated, 18% for GPT-4.</div>
 </div>
 <div class="fragment">
-<div class="card r"><b>🚫 Never</b> enter patient-identifiable data (name, date of birth, record number, photo…) into a public AI tool</div>
-<div class="card g"><b>✅ Anonymise</b> clinical cases, follow your institution's policy and the GDPR, and prefer the tools approved by your institution</div>
-<div class="card t fragment"><b>💡 Give context instead</b>
-<div class="rc"><span class="k">Role</span><span>“You are an experienced nursing educator…”</span><span class="k">Context</span><span>“…for Year 1 students, before their first placement.”</span></div></div>
+<div class="card r fragment"><b>🚫 Data</b>: Never give patient-identifiable data to a public AI tool</div>
+<div class="card g fragment"><b>✅ Role</b>: Add “You are an experienced nursing educator…” to the prompt.</div>
+<div class="card t fragment"><b>💡 Target</b>: Add “explain for Year 1 students” to the prompt.</div>
 </div>
 </div>
 
@@ -191,7 +188,7 @@ lang: en
 
 ## Workshop 1: Bibliography and literature review
 
-<div class="cards c4">
+<div class="cards c3">
 <div class="card t"><div class="e">🔎</div><b>Search</b>an AI tool with web search</div>
 <div class="card o"><div class="e">📑</div><b>Summarise &amp; compare</b>key papers in a table</div>
 <div class="card r"><div class="e">✅</div><b>Check</b>every reference</div>
@@ -201,7 +198,7 @@ lang: en
 
 ## Workshop 2: Your own AI knowledge base
 
-<div class="cards c4">
+<div class="cards c3">
 <div class="card t"><div class="e">📂</div><b>Upload</b>documents into NotebookLM</div>
 <div class="card o"><div class="e">❓</div><b>Ask</b>questions in plain language</div>
 <div class="card r"><div class="e">🔗</div><b>Trace</b>each answer to its source</div>
@@ -211,7 +208,7 @@ lang: en
 
 ## Workshop 3: Emails
 
-<div class="cards c4">
+<div class="cards c3">
 <div class="card t"><div class="e">✍️</div><b>Draft</b>professional emails</div>
 <div class="card o"><div class="e">🎚️</div><b>Adapt</b>the tone to the audience</div>
 <div class="card g"><div class="e">🔁</div><b>Reuse</b>templates for repetitive emails</div>
