@@ -2,7 +2,7 @@
 title: "Before the training — Setup"
 ---
 
-# Before the training: setup (15 min)
+# Before the training: setup
 
 To make the most of the hands-on workshops, please create the following **free** accounts **before the day** and check that you can log in from your own laptop.
 
