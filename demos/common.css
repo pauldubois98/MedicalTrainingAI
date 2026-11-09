@@ -1,8 +1,8 @@
 :root {
-  --ink: #1f2a44; --muted: #6b7489; --light: #eef1f6;
-  --violet: #800080; --violet-l: #f0d9f0; --orange: #ffc000; --orange-l: #fff2cc;
-  --orange-d: #b38600;  /* orange foncé : texte orange lisible sur fond blanc */
-  --green: #2e8b57; --red: #c0392b;
+  --ink: #382b2d; --muted: #76696b; --light: #f3f1f0;
+  --violet: #007bc4; --violet-l: #dcedf8; --orange: #ff5700; --orange-l: #ffe8dc;
+  --orange-d: #c84400;  /* orange foncé : texte orange lisible sur fond blanc */
+  --green: #00857f; --red: #c8086e;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #fff; color: var(--ink);

@@ -6,20 +6,20 @@ import math
 FONT = "Lato, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif"
 
 # Palette commune avec theme.css et demos/common.css
-INK = "#1f2a44"
-MUTED = "#6b7489"
-LIGHT = "#eef1f6"
-VIOLET = "#800080"      # couleur d'accent
-VIOLET_L = "#f0d9f0"
-ORANGE = "#ffc000"      # couleur principale (remplissages, traits)
-ORANGE_D = "#b38600"    # même teinte, plus foncée : texte orange lisible sur fond blanc
-ORANGE_L = "#fff2cc"
-RED = "#c0392b"
-RED_L = "#f7dcd8"
-GREEN = "#2e8b57"
-GREEN_L = "#d9f0e3"
-BLUE = "#2e6fb3"        # couleur secondaire (biais, corpus…)
-BLUE_L = "#dde8f5"
+INK = "#382b2d"
+MUTED = "#76696b"
+LIGHT = "#f3f1f0"
+VIOLET = "#007bc4"      # couleur d'accent
+VIOLET_L = "#dcedf8"
+ORANGE = "#ff5700"      # couleur principale (remplissages, traits)
+ORANGE_D = "#c84400"    # même teinte, plus foncée : texte orange lisible sur fond blanc
+ORANGE_L = "#ffe8dc"
+RED = "#c8086e"
+RED_L = "#fde0ef"
+GREEN = "#00857f"
+GREEN_L = "#d5f1ef"
+BLUE = "#005a91"        # couleur secondaire (biais, corpus…)
+BLUE_L = "#e6f2fa"
 WHITE = "#ffffff"
 
 

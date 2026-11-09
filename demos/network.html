@@ -27,7 +27,7 @@
   th { font-size: 17px; color: var(--muted); font-weight: normal; padding: 2px 4px; }
   td { text-align: center; padding: 3px 4px; border-top: 1px solid var(--light); }
   tr.trow { cursor: pointer; }
-  tr.trow:hover td { background: #f7f8fb; }
+  tr.trow:hover td { background: #f8f7f6; }
   tr.cur td { background: var(--orange-l) !important; }
   td.tgt { cursor: pointer; font-weight: bold; color: var(--violet); }
   td.ok { color: var(--green); font-weight: bold; }
@@ -155,7 +155,7 @@ function el(tag, attrs, parent) {
   (parent || svg).appendChild(e); return e;
 }
 function colorFor(v) {
-  const t = Math.min(1, Math.abs(v)), G = [221, 221, 221], T = v >= 0 ? [46, 139, 87] : [192, 57, 43];
+  const t = Math.min(1, Math.abs(v)), G = [221, 221, 221], T = v >= 0 ? [0, 133, 127] : [200, 8, 110];
   return `rgb(${G.map((g, i) => Math.round(g + t * (T[i] - g))).join(",")})`;
 }
 function layout() {
@@ -180,10 +180,10 @@ function render() {
     const [ax, ay] = pos[l][i], [bx, by] = pos[l + 1][j], w = S.W[l][i][j];
     const active = drag && drag.kind === "w" && drag.l === l && drag.i === i && drag.j === j;
     const hov = hover && hover.kind === "w" && hover.l === l && hover.i === i && hover.j === j;
-    if (w === 0) el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: "#c9cfdb", "stroke-width": 2, "stroke-dasharray": "6 6"});
-    else el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: w > 0 ? "#2e8b57" : "#c0392b",
+    if (w === 0) el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: "#d6cfce", "stroke-width": 2, "stroke-dasharray": "6 6"});
+    else el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: w > 0 ? "#00857f" : "#c8086e",
                      "stroke-width": 1.5 + Math.abs(w) * 4, "stroke-linecap": "round"});
-    if (active || hov) el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: "#800080", "stroke-width": 3, opacity: .7});
+    if (active || hov) el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: "#007bc4", "stroke-width": 3, opacity: .7});
     const h = el("line", {x1: ax, y1: ay, x2: bx, y2: by, class: "hit"});
     h.onpointerdown = e => startDrag(e, {kind: "w", l, i, j});
     h.onpointerenter = () => setHover({kind: "w", l, i, j});
@@ -195,10 +195,10 @@ function render() {
     const [x, y] = pos[l][j], v = F.acts[l][j], g = el("g", {class: "neuron" + (l === 0 ? " input" : "")});
     if (l > 0) {
       const b = S.B[l - 1][j];
-      if (b !== 0) el("circle", {cx: x, cy: y, r: R + 3 + Math.abs(b) * 4, fill: b > 0 ? "#2e8b57" : "#c0392b"}, g);
+      if (b !== 0) el("circle", {cx: x, cy: y, r: R + 3 + Math.abs(b) * 4, fill: b > 0 ? "#00857f" : "#c8086e"}, g);
     }
     el("circle", {cx: x, cy: y, r: R, fill: colorFor(v), stroke: "#fff", "stroke-width": 3}, g);
-    el("text", {x, y, class: "val", fill: Math.abs(v) > .4 ? "#fff" : "#1f2a44"}, g).textContent = fmt(v);
+    el("text", {x, y, class: "val", fill: Math.abs(v) > .4 ? "#fff" : "#382b2d"}, g).textContent = fmt(v);
     if (l === 0) g.onclick = () => { const k = S.ivs.indexOf(S.inputs[j]); S.inputs[j] = S.ivs[(k + 1) % S.ivs.length]; update(); };
     else {
       g.onpointerdown = e => startDrag(e, {kind: "b", l: l - 1, j});
@@ -213,8 +213,8 @@ function render() {
     const g = el("g", {class: "wlab", "pointer-events": "none"}), txt = (pre || "") + fmt(w);
     const wdt = 14 + txt.length * 11;
     el("rect", {x: x - wdt / 2, y: y - 15, width: wdt, height: 30, rx: 15,
-                stroke: strong ? "#800080" : (w >= 0 ? "#2e8b57" : "#c0392b")}, g);
-    el("text", {x, y, fill: w >= 0 ? "#2e8b57" : "#c0392b"}, g).textContent = txt;
+                stroke: strong ? "#007bc4" : (w >= 0 ? "#00857f" : "#c8086e")}, g);
+    el("text", {x, y, fill: w >= 0 ? "#00857f" : "#c8086e"}, g).textContent = txt;
   });
   if (hover && hover.kind === "n") refreshTip(F);
 }
@@ -334,7 +334,7 @@ function renderPanel() {
 function drawActPlot() {
   const c = document.getElementById("actplot"), g = c.getContext("2d"), W = c.width, H = c.height;
   g.clearRect(0, 0, W, H); g.strokeStyle = "#ddd"; g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.moveTo(W / 2, 0); g.lineTo(W / 2, H); g.stroke();
-  g.strokeStyle = "#ffc000"; g.lineWidth = 2; g.beginPath();
+  g.strokeStyle = "#ff5700"; g.lineWidth = 2; g.beginPath();
   for (let px = 0; px <= W; px++) { const x = (px / W - .5) * 6, y = H / 2 - ACT[S.act](x) * H / 3.2; px ? g.lineTo(px, y) : g.moveTo(px, y); }
   g.stroke();
 }

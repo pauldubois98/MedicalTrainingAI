@@ -123,7 +123,7 @@ function trainStep() {
 const svg = document.getElementById("svg"), NS = "http://www.w3.org/2000/svg";
 function el(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; }
 function colorFor(v) {
-  const t = Math.min(1, Math.abs(v)), G = [221, 221, 221], T = v >= 0 ? [46, 139, 87] : [192, 57, 43];
+  const t = Math.min(1, Math.abs(v)), G = [221, 221, 221], T = v >= 0 ? [0, 133, 127] : [200, 8, 110];
   return `rgb(${G.map((g, i) => Math.round(g + t * (T[i] - g))).join(",")})`;
 }
 const fmt = v => (Math.round(v * 100) / 100).toString();
@@ -138,16 +138,16 @@ function drawNet() {
   ["Inputs", "Hidden layer", "Output"].forEach((t, l) => el("text", {x: pos[l][0][0], y: 26, class: "layer-lab"}).textContent = t);
   for (let l = 0; l < W.length; l++) for (let i = 0; i < SIZES[l]; i++) for (let j = 0; j < SIZES[l + 1]; j++) {
     const w = W[l][i][j], [ax, ay] = pos[l][i], [bx, by] = pos[l + 1][j];
-    el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: w >= 0 ? "#2e8b57" : "#c0392b",
+    el("line", {x1: ax, y1: ay, x2: bx, y2: by, stroke: w >= 0 ? "#00857f" : "#c8086e",
                 "stroke-width": Math.min(14, 1 + Math.abs(w) * 1.6), "stroke-linecap": "round", opacity: .85});
   }
   const showArrows = document.getElementById("arrows").checked && !running;
   if (showArrows) drawArrows(pos);
   for (let l = 0; l < SIZES.length; l++) for (let j = 0; j < SIZES[l]; j++) {
     const [x, y] = pos[l][j], v = acts[l][j];
-    if (l > 0) { const b = B[l - 1][j]; el("circle", {cx: x, cy: y, r: 34 + Math.min(10, Math.abs(b) * 1.5), fill: b >= 0 ? "#2e8b57" : "#c0392b", opacity: .9}); }
+    if (l > 0) { const b = B[l - 1][j]; el("circle", {cx: x, cy: y, r: 34 + Math.min(10, Math.abs(b) * 1.5), fill: b >= 0 ? "#00857f" : "#c8086e", opacity: .9}); }
     el("circle", {cx: x, cy: y, r: 32, fill: colorFor(v), stroke: "#fff", "stroke-width": 3});
-    el("text", {x, y, class: "val", fill: v > .45 ? "#fff" : "#1f2a44"}).textContent = fmt(v);
+    el("text", {x, y, class: "val", fill: v > .45 ? "#fff" : "#382b2d"}).textContent = fmt(v);
   }
   if (showArrows) pending.forEach(([x, y, g]) => arrow(x, y, g, pending.gmax));
 }
@@ -157,7 +157,7 @@ function arrow(x, y, g, gmax) {
   if (Math.abs(g) < 0.03 * gmax) return;
   const d = up ? -1 : 1;
   el("polygon", {points: `${x - size},${y - d * size * .5} ${x + size},${y - d * size * .5} ${x},${y + d * size}`,
-                 fill: "#800080", stroke: "#fff", "stroke-width": 1.5});
+                 fill: "#007bc4", stroke: "#fff", "stroke-width": 1.5});
 }
 function drawArrows(pos) {
   const [gW, gB] = zeros();
@@ -201,10 +201,10 @@ function drawCurve() {
   const c = document.getElementById("curve"), g = c.getContext("2d"), Wc = c.width, Hc = c.height, pad = 30;
   g.clearRect(0, 0, Wc, Hc);
   const maxL = Math.max(0.3, ...history), n = history.length;
-  g.strokeStyle = "#d0d5de"; g.lineWidth = 2; g.beginPath(); g.moveTo(pad, 10); g.lineTo(pad, Hc - pad); g.lineTo(Wc - 10, Hc - pad); g.stroke();
-  g.fillStyle = "#6b7489"; g.font = "22px Lato, sans-serif";
+  g.strokeStyle = "#dbd5d4"; g.lineWidth = 2; g.beginPath(); g.moveTo(pad, 10); g.lineTo(pad, Hc - pad); g.lineTo(Wc - 10, Hc - pad); g.stroke();
+  g.fillStyle = "#76696b"; g.font = "22px Lato, sans-serif";
   g.fillText("steps", Wc - 80, Hc - 6);
-  g.strokeStyle = "#800080"; g.lineWidth = 4; g.beginPath();
+  g.strokeStyle = "#007bc4"; g.lineWidth = 4; g.beginPath();
   const stride = Math.max(1, Math.floor(n / 600));
   for (let k = 0; k < n; k += stride) {
     const x = pad + (Wc - pad - 10) * k / Math.max(1, n - 1), y = Hc - pad - (Hc - pad - 10) * history[k] / maxL;

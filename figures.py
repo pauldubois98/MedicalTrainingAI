@@ -40,6 +40,10 @@ def cats_ml():
 
 
 def neuron():
+    # one colour per parameter: the five colours of the Gustave Roussy logo
+    # (line colour, darker variant for text on white)
+    W_COL = [("#ff5700", "#c84400"), ("#f50a85", "#c8086e"), ("#bfc700", "#7f8500")]
+    B_COL, F_COL = ("#00ada5", "#00857f"), ("#007bc4", "#007bc4")
     s = SVG(1600, 720)
     xs = [(150, 190), (150, 360), (150, 530)]
     sx, sy, sr = 760, 360, 105
@@ -47,34 +51,37 @@ def neuron():
     for x, t in heads:
         s.text(x, 50, t, fs=30, color=MUTED, italic=True)
     for k, (x, y) in enumerate(xs):
-        s.line(x + 55, y, sx - sr + 5, sy, color=[ORANGE, RED, ORANGE][k], sw=[7, 4, 10][k])
+        c, ct = W_COL[k]
+        s.line(x + 55, y, sx - sr + 5, sy, color=c, sw=[7, 4, 10][k])
         mx, my = x + (sx - x) * 0.42, y + (sy - y) * 0.42
-        s.cbox(mx, my, 90, 52, f"w{'₁₂₃'[k]}", fill=WHITE, stroke=[ORANGE, RED, ORANGE][k], fs=30, rx=26)
+        s.cbox(mx, my, 90, 52, f"w{'₁₂₃'[k]}", fill=WHITE, stroke=c, fs=30, rx=26, color=ct, weight="bold")
         s.circle(x, y, 55, fill=LIGHT, stroke=INK)
         s.text(x, y, f"x{'₁₂₃'[k]}", fs=40)
-    s.cbox(sx, 120, 170, 64, "b", fill=BLUE_L, stroke=BLUE, fs=28, rx=32)
-    s.arrow(sx, 152, sx, sy - sr - 4, color=BLUE, sw=4, head=16)
-    s.circle(sx, sy, sr, fill=VIOLET_L, stroke=VIOLET, sw=5)
-    s.text(sx, sy - 12, "Σ", fs=80, color=VIOLET, weight="bold")
+    s.cbox(sx, 120, 170, 64, "b", fill="#d5f1ef", stroke=B_COL[0], fs=30, rx=32, color=B_COL[1], weight="bold")
+    s.arrow(sx, 152, sx, sy - sr - 4, color=B_COL[0], sw=4, head=16)
+    s.circle(sx, sy, sr, fill=LIGHT, stroke=INK, sw=5)
+    s.text(sx, sy - 12, "Σ", fs=80, color=INK, weight="bold")
     s.arrow(sx + sr + 5, sy, 1010, sy, sw=6, head=22)
     bx, by, bw, bh = 1020, 260, 220, 200
-    s.rect(bx, by, bw, bh, fill=WHITE, stroke=ORANGE, sw=5)
-    s.line(bx + 15, by + bh / 2, bx + bw - 15, by + bh / 2, color="#d0d5de", sw=2)
-    s.line(bx + bw / 2, by + 15, bx + bw / 2, by + bh - 15, color="#d0d5de", sw=2)
+    s.rect(bx, by, bw, bh, fill=WHITE, stroke=F_COL[0], sw=5)
+    s.line(bx + 15, by + bh / 2, bx + bw - 15, by + bh / 2, color="#dbd5d4", sw=2)
+    s.line(bx + bw / 2, by + 15, bx + bw / 2, by + bh - 15, color="#dbd5d4", sw=2)
     pts = []
     for k in range(61):
         t = -6 + 12 * k / 60
         pts.append((bx + 15 + (bw - 30) * k / 60, by + bh - 25 - (bh - 50) / (1 + np.exp(-t))))
     s.raw('<polyline fill="none" stroke="%s" stroke-width="6" stroke-linecap="round" points="%s"/>'
-          % (ORANGE, " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)))
-    s.text(bx + bw / 2, by + bh + 40, "f", fs=36, color=ORANGE_D, weight="bold", italic=True)
+          % (F_COL[0], " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)))
+    s.text(bx + bw / 2, by + bh + 40, "f", fs=36, color=F_COL[1], weight="bold", italic=True)
     s.arrow(bx + bw + 5, sy, 1390, sy, sw=6, head=22)
-    s.circle(1460, sy, 65, fill=ORANGE, stroke=None)
-    s.text(1460, sy, "y", fs=46, color=INK, weight="bold")
+    s.circle(1460, sy, 65, fill=INK, stroke=None)
+    s.text(1460, sy, "y", fs=46, color=WHITE, weight="bold")
     s.raw(f'<text x="800" y="650" font-family="{FONT}" font-size="44" fill="{INK}" text-anchor="middle">'
-          f'y = <tspan fill="{ORANGE_D}" font-style="italic" font-weight="bold">f</tspan>( '
-          f'<tspan fill="{ORANGE_D}">w₁</tspan>·x₁ + <tspan fill="{RED}">w₂</tspan>·x₂ + '
-          f'<tspan fill="{ORANGE_D}">w₃</tspan>·x₃ + <tspan fill="{BLUE}">b</tspan> )</text>')
+          f'y = <tspan fill="{F_COL[1]}" font-style="italic" font-weight="bold">f</tspan>( '
+          f'<tspan fill="{W_COL[0][1]}" font-weight="bold">w₁</tspan>·x₁ + '
+          f'<tspan fill="{W_COL[1][1]}" font-weight="bold">w₂</tspan>·x₂ + '
+          f'<tspan fill="{W_COL[2][1]}" font-weight="bold">w₃</tspan>·x₃ + '
+          f'<tspan fill="{B_COL[1]}" font-weight="bold">b</tspan> )</text>')
     s.save(out("neuron.svg"))
 
 

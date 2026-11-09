@@ -75,26 +75,26 @@ function render() {
   // en-têtes : les 3 lettres lues et la lettre prédite
   IN_X.forEach((x, k) => {
     el("text", {x, y: 16, class: "head"}, `letter ${k + 1}`);
-    el("rect", {x: x - 28, y: 28, width: 56, height: 46, rx: 10, fill: "#800080"});
+    el("rect", {x: x - 28, y: 28, width: 56, height: 46, rx: 10, fill: "#007bc4"});
     el("text", {x, y: 51, class: "big"}, show(ctx[k]));
   });
   el("text", {x: HID_X, y: 16, class: "head"}, `hidden layer (${H} neurons)`);
   el("text", {x: OUT_X + 60, y: 16, class: "head"}, "next letter");
-  el("rect", {x: OUT_X + 32, y: 28, width: 56, height: 46, rx: 10, fill: "#ffc000"});
+  el("rect", {x: OUT_X + 32, y: 28, width: 56, height: 46, rx: 10, fill: "#ff5700"});
   el("text", {x: OUT_X + 60, y: 51, class: "big dark"}, show(A[best]));
   // traits : entrées actives → couche cachée (couleur = signe du poids, opacité = force)
   ctx.forEach((c, k) => {
     const i = A.indexOf(c);
     for (let j = 0; j < H; j++) {
       const w = MODEL.W1[k * V + i][j];
-      el("line", {x1: IN_X[k] + 6, y1: rowY(i), x2: HID_X - 9, y2: hidY(j), stroke: w >= 0 ? "#2e8b57" : "#c0392b",
+      el("line", {x1: IN_X[k] + 6, y1: rowY(i), x2: HID_X - 9, y2: hidY(j), stroke: w >= 0 ? "#00857f" : "#c8086e",
                   "stroke-width": 1 + Math.min(3, Math.abs(w)), opacity: Math.min(.9, .15 + Math.abs(w) / 4)});
     }
   });
   // couche cachée → lettre prédite
   for (let j = 0; j < H; j++) {
     const w = MODEL.W2[j][best];
-    el("line", {x1: HID_X + 9, y1: hidY(j), x2: OUT_X - 6, y2: rowY(best), stroke: w >= 0 ? "#2e8b57" : "#c0392b",
+    el("line", {x1: HID_X + 9, y1: hidY(j), x2: OUT_X - 6, y2: rowY(best), stroke: w >= 0 ? "#00857f" : "#c8086e",
                 "stroke-width": 1 + Math.min(3, Math.abs(w) / 2), opacity: Math.min(.9, .15 + Math.abs(w) / 6)});
   }
   // fond blanc sous les colonnes d'entrée : les traits passent « sous » les colonnes suivantes
@@ -103,20 +103,20 @@ function render() {
   IN_X.forEach((x, k) => A.split("").forEach((c, i) => {
     const on = ctx[k] === c;
     el("text", {x: x - 12, y: rowY(i), class: "lab" + (on ? " on" : "")}, show(c));
-    const g = el("circle", {cx: x, cy: rowY(i), r: 6, fill: on ? "#800080" : "#fff", stroke: on ? "#800080" : "#b8bfcc",
+    const g = el("circle", {cx: x, cy: rowY(i), r: 6, fill: on ? "#007bc4" : "#fff", stroke: on ? "#007bc4" : "#c7bebd",
                             "stroke-width": 1.5, class: "in"});
     g.onclick = () => { ctx[k] = c; text = text.slice(0, -3) + ctx.join(""); render(); };
   }));
   // couche cachée : couleur = activation
-  h.forEach((v, j) => el("circle", {cx: HID_X, cy: hidY(j), r: 9, fill: `rgba(255,192,0,${v.toFixed(2)})`, stroke: "#ffc000", "stroke-width": 1.5}));
+  h.forEach((v, j) => el("circle", {cx: HID_X, cy: hidY(j), r: 9, fill: `rgba(255,87,0,${v.toFixed(2)})`, stroke: "#ff5700", "stroke-width": 1.5}));
   // sorties : une par lettre, barre = probabilité
   A.split("").forEach((c, i) => {
     const b = i === best, y = rowY(i);
-    const o = el("circle", {cx: OUT_X, cy: y, r: 6, fill: b ? "#ffc000" : `rgba(255,192,0,${Math.min(1, p[i] * 3).toFixed(2)})`,
-                            stroke: "#ffc000", "stroke-width": 1.2, class: "out"});
+    const o = el("circle", {cx: OUT_X, cy: y, r: 6, fill: b ? "#ff5700" : `rgba(255,87,0,${Math.min(1, p[i] * 3).toFixed(2)})`,
+                            stroke: "#ff5700", "stroke-width": 1.2, class: "out"});
     o.onclick = () => push(c);                         // clic sur une sortie : on l'ajoute au texte
     el("text", {x: OUT_X + 12, y, class: "olab" + (b ? " best" : "")}, show(c));
-    el("rect", {x: OUT_X + 28, y: y - 5, width: Math.max(1, 200 * p[i]), height: 10, rx: 3, fill: b ? "#ffc000" : "#ffe699"});
+    el("rect", {x: OUT_X + 28, y: y - 5, width: Math.max(1, 200 * p[i]), height: 10, rx: 3, fill: b ? "#ff5700" : "#ffcbab"});
     if (top.includes(i)) el("text", {x: OUT_X + 34 + 200 * p[i], y, class: "pct" + (b ? " best" : "")}, `${Math.round(100 * p[i])} %`);
   });
   const t = document.getElementById("text");

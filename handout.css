@@ -1,8 +1,8 @@
 /* Printable handouts (workshops, data). Same palette as the slides. */
 :root {
-  --ink: #1f2a44; --muted: #6b7489; --light: #eef1f6;
-  --violet: #800080; --violet-l: #f0d9f0; --orange: #ffc000; --orange-l: #fff2cc; --orange-d: #b38600;
-  --red: #c0392b; --red-l: #f7dcd8; --green: #2e8b57; --green-l: #d9f0e3;
+  --ink: #382b2d; --muted: #76696b; --light: #f3f1f0;
+  --violet: #007bc4; --violet-l: #dcedf8; --orange: #ff5700; --orange-l: #ffe8dc; --orange-d: #c84400;
+  --red: #c8086e; --red-l: #fde0ef; --green: #00857f; --green-l: #d5f1ef;
 }
 html { background: #fff; }
 body { font-family: Lato, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif; color: var(--ink); background: #fff;
@@ -20,7 +20,7 @@ blockquote { margin: 12px 0; padding: 10px 16px; background: var(--orange-l); bo
 blockquote p { margin: 4px 0; }
 table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; break-inside: avoid; }
 th { background: var(--light); text-align: left; }
-th, td { border: 1px solid #d8dde6; padding: 5px 8px; vertical-align: top; }
+th, td { border: 1px solid #e2dddc; padding: 5px 8px; vertical-align: top; }
 li { margin: 3px 0; }
 hr { border: 0; border-top: 2px solid var(--light); margin: 24px 0; }
 em { color: var(--muted); }

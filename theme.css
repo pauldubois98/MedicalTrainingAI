@@ -1,16 +1,16 @@
 :root {
-  --ink: #1f2a44; --muted: #6b7489; --light: #eef1f6;
-  --violet: #800080; --violet-l: #f0d9f0; --orange: #ffc000; --orange-l: #fff2cc;
-  --orange-d: #b38600;  /* orange foncé : texte orange lisible sur fond blanc */
-  --red: #c0392b; --red-l: #f7dcd8; --green: #2e8b57; --green-l: #d9f0e3;
+  --ink: #382b2d; --muted: #76696b; --light: #f3f1f0;
+  --violet: #007bc4; --violet-l: #dcedf8; --orange: #ff5700; --orange-l: #ffe8dc;
+  --orange-d: #c84400;  /* orange foncé : texte orange lisible sur fond blanc */
+  --red: #c8086e; --red-l: #fde0ef; --green: #00857f; --green-l: #d5f1ef;
   --r-background-color: #ffffff;
   --r-main-font: Lato, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
   --r-heading-font: Lato, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
-  --r-main-color: #1f2a44;
-  --r-heading-color: #1f2a44;
+  --r-main-color: #382b2d;
+  --r-heading-color: #382b2d;
   --r-heading-text-transform: none;
   --r-heading-font-weight: 800;
-  --r-link-color: #b38600;
+  --r-link-color: #c84400;
   --r-main-font-size: 34px;
 }
 .reveal-viewport { background: #fff; }
@@ -107,7 +107,7 @@
 .reveal .card.cot { text-align: left; background: #fff; border: 3px solid var(--light); }
 .reveal .card.cot h3 { font-size: 28px; margin: 0 0 .4em; text-transform: none; }
 .reveal .toks { font-size: 24px; line-height: 1.75; }
-.reveal .tok { display: inline-block; border: 1px solid #c9cfdb; border-radius: 5px; padding: 0 4px; margin: 2px 0; line-height: 1.4; }
+.reveal .tok { display: inline-block; border: 1px solid #d6cfce; border-radius: 5px; padding: 0 4px; margin: 2px 0; line-height: 1.4; }
 .reveal .cot-n b { display: inline; }
 .reveal .tok.bad { background: var(--red-l); border-color: var(--red); color: var(--red); font-weight: bold; }
 .reveal .cot-n { margin-top: .5em; font-size: 24px; color: var(--red); }
@@ -147,5 +147,12 @@
 .reveal ol.arena { margin: .4em 0 0 1.2em; padding: 0; font-size: .95em; }
 .reveal ol.arena li { margin: 4px 0; }
 .reveal table.costs { font-size: .95em; margin: .4em 0; border-collapse: collapse; width: 100%; }
-.reveal table.costs td { border: 0; border-bottom: 1px solid #e3d9a8; padding: 6px 8px; vertical-align: top; }
+.reveal table.costs td { border: 0; border-bottom: 1px solid #f5cdb8; padding: 6px 8px; vertical-align: top; }
 .reveal table.costs td:first-child { font-weight: bold; white-space: nowrap; }
+
+/* Gustave Roussy palette: title underline in the five colours of the logo's star */
+.reveal h2::after { width: 150px; background: linear-gradient(90deg,
+  #ff5700 0 20%, #f50a85 20% 40%, #bfc700 40% 60%, #00ada5 60% 80%, #007bc4 80% 100%); }
+.reveal section.divider h2::after { width: 220px; }
+.reveal #title-slide .title::after { width: 220px; background: linear-gradient(90deg,
+  #ff5700 0 20%, #f50a85 20% 40%, #bfc700 40% 60%, #00ada5 60% 80%, #007bc4 80% 100%); }
