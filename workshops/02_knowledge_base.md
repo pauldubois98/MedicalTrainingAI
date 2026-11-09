@@ -31,13 +31,16 @@ title: "Workshop 2 — Your own AI knowledge base"
 
 **Discuss:** does it say when it doesn't know? Does it correct the false premise? Does it add information that is not in the sources?
 
+
+<div class="warn">
+
+**Quality of the sources:** an outdated document gives outdated answers.
+
+</div>
+
 ## Exercise 2: Your own knowledge base
 
-Create a new notebook with **your own non-confidential documents**: course notes, a guideline you teach, a programme handbook, open-access articles…
-
-1. Write **5 questions your students actually ask**, and test them.
-2. For each answer, note: ✅ correct and well sourced · ⚠️ partly correct · ❌ wrong or invented.
-3. Explore the tools that turn your sources into teaching material (study guide, FAQ, mind map, quiz or flashcards, audio overview, depending on what the tool offers). **Read everything before giving it to students.**
+Create a new notebook with **your own non-confidential documents**: course notes, a guideline you teach, a programme handbook, open-access articles… and test a few questions
 
 Useful instructions to add (in the chat or the notebook's settings):
 
@@ -48,17 +51,34 @@ say so clearly and suggest who to contact. Always cite the passage.
 Use simple language and short paragraphs.
 ```
 
-## Exercise 3: Debrief
-
-- Which questions worked well? Which ones failed, and why (missing document, passage not found, ambiguous question)?
-- **Quality of the sources:** an outdated document gives outdated answers. Who will keep the knowledge base up to date?
-- **Sharing with students:** what would you need to check first? (accuracy, institutional policy, data protection, what students may and may not upload)
+- Which questions worked well?
+- Which ones failed, and why (missing document, passage not found, ambiguous question)?
 
 <div class="warn">
 
-**Never upload confidential documents** (patient data, student records, unpublished exam papers) to a public tool. Check your institution's policy; some institutions provide an approved tool.
+**Never upload confidential documents** (patient data, student records, unpublished exam papers) to a public tool.
+Some institutions provide an approved tool.
 
 </div>
+
+## Exercise 3: A literature review from scratch
+
+This time, you do **not** give the AI the articles: it has to **find** them itself, with a search tool.
+
+1. **Choose a question**, e.g. *Does simulation-based training improve nursing students' clinical skills?* (or a topic you teach).
+2. **Let the AI search:** use a *Deep Research* mode (ChatGPT, Gemini, Claude) or, in NotebookLM, the option to **discover sources on the web**. Ask:
+
+```
+Write a short literature review on [question] for health
+professions educators. Search for peer-reviewed studies from the
+last 10 years, favouring systematic reviews and meta-analyses.
+Give a summary table (authors, year, design, population, main
+finding, DOI or PMID), then a synthesis: what is known, where the
+studies disagree, and what is missing.
+```
+
+3. **Check 3 references:** open the DOI or search the title in [PubMed](https://pubmed.ncbi.nlm.nih.gov). Does the article exist? Is it the right one? Does it say what the AI claims?
+4. **Close the loop:** add the articles you have checked to a notebook as sources, and ask your questions again: the answers now cite the exact passages.
 
 ## Use cases
 
