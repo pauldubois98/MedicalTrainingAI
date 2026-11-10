@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Token par token</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  #text { font-size: 36px; line-height: 1.45; min-height: 120px; background: var(--light);
+    border-radius: 16px; padding: 14px 24px; }
+  #text .new { background: var(--violet-l); color: var(--violet); font-weight: bold; border-radius: 8px;
+    padding: 0 6px; animation: pop .5s ease; }
+  #text .cursor { display: inline-block; width: 16px; height: 36px; background: var(--violet);
+    vertical-align: middle; margin-left: 6px; animation: blink 1s infinite; }
+  @keyframes pop { from { transform: scale(1.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  h3 { margin: 0; font-size: 24px; color: var(--muted); font-weight: normal; }
+  h3 b { color: var(--orange-d); }
+  .bars > div { cursor: pointer; }
+  .bars .lab:hover, .bars .lab.hover { color: var(--violet); font-weight: bold; }
+  .bars .track.hover .fill { background: var(--violet); }
+  #info { font-size: 22px; color: var(--muted); }
+  /* buttons pinned at the bottom */
+  #controls { margin-top: auto; }
+</style>
+</head>
+<body>
+<div id="text"></div>
+<h3><b>Token suivant :</b></h3>
+<div class="bars" id="bars"></div>
+<div class="row" id="controls">
+  <button id="best">Le plus probable →</button>
+  <button id="undo" class="alt">↶ Annuler</button>
+  <button id="reset" class="alt">Recommencer</button>
+  <span id="info"></span>
+</div>
+
+<script>
+// Mini « modèle » illustratif : les probabilités dépendent des 2 derniers tokens (ou du dernier).
+// Pas un vrai LLM, juste de quoi explorer différents chemins.
+const START = ["Le", "patient", "a", "été", "traité", "par"];
+const M = {
+  "traité par": {antibiotiques: 58, paracétamol: 17, insuline: 13, chimiothérapie: 8, chirurgie: 4},
+  "par antibiotiques": {pour: 30, pendant: 30, ".": 25, et: 15},
+  "par paracétamol": {pendant: 50, ".": 30, et: 20},
+  "par insuline": {".": 45, et: 30, après: 25},
+  "par chimiothérapie": {".": 50, et: 30, après: 20},
+  "par chirurgie": {".": 60, après: 40},
+  "pour une": {infection: 55, pneumonie: 45},
+  "signalé une": {légère: 100},
+  "en une": {semaine: 100},
+  "après le": {diagnostic: 100},
+  "La fièvre": {a: 100},
+  "la fièvre": {a: 100},
+  "fièvre a": {disparu: 70, baissé: 30},
+  "patient a": {été: 50, guéri: 30, signalé: 20},
+  "a été": {traité: 40, surveillé: 30, hospitalisé: 30},
+  "se sont": {améliorés: 70, estompés: 30},
+  "Aucun effet": {indésirable: 100},
+  "pour": {une: 100},
+  "pendant": {trois: 100},
+  "trois": {jours: 70, semaines: 30},
+  "jours": {".": 85, ",": 15},
+  "semaines": {".": 85, ",": 15},
+  "une": {semaine: 50, infection: 50},
+  "infection": {urinaire: 100},
+  "urinaire": {".": 80, et: 20},
+  "pneumonie": {".": 85, et: 15},
+  "semaine": {".": 100},
+  "après": {le: 60, "l'opération": 40},
+  "diagnostic": {".": 100},
+  "l'opération": {".": 100},
+  "et": {la: 25, les: 25, est: 50},
+  "est": {sorti: 60, surveillé: 40},
+  "sorti": {".": 70, après: 30},
+  "surveillé": {étroitement: 70, ".": 30},
+  "étroitement": {".": 100},
+  "hospitalisé": {pour: 70, ".": 30},
+  "guéri": {".": 60, complètement: 40},
+  "complètement": {".": 100},
+  "signalé": {une: 100},
+  "légère": {nausée: 100},
+  "nausée": {".": 100},
+  "disparu": {en: 60, ".": 40},
+  "baissé": {en: 100},
+  "en": {"48": 60, une: 40},
+  "48": {heures: 100},
+  "heures": {".": 100},
+  "symptômes": {se: 70, ".": 30},
+  "se": {sont: 100},
+  "améliorés": {".": 60, en: 40},
+  "estompés": {en: 60, ".": 40},
+  ",": {et: 60, mais: 40},
+  "mais": {sans: 100},
+  "sans": {effets: 60, complications: 40},
+  "effets": {indésirables: 100},
+  "indésirables": {".": 100},
+  "complications": {".": 100},
+  ".": {Le: 40, La: 25, Les: 25, Aucun: 10},
+  "Le": {patient: 100},
+  "La": {fièvre: 100},
+  "Les": {symptômes: 100},
+  "Aucun": {effet: 100},
+  "effet": {indésirable: 100},
+  "indésirable": {".": 100},
+  "patient": {a: 55, est: 45},
+  "a": {été: 100},
+  "la": {fièvre: 100},
+  "les": {symptômes: 100},
+  "le": {diagnostic: 100},
+  "été": {traité: 40, surveillé: 30, hospitalisé: 30},
+  "traité": {par: 100},
+  "par": {antibiotiques: 58, paracétamol: 17, insuline: 13, chimiothérapie: 8, chirurgie: 4},
+  "antibiotiques": {".": 60, et: 40},
+  "paracétamol": {".": 60, et: 40},
+  "insuline": {".": 60, et: 40},
+  "chimiothérapie": {".": 60, et: 40},
+  "chirurgie": {".": 100},
+  "sont": {améliorés: 100},
+  "fièvre": {a: 100},
+};
+const FALLBACK = {".": 80, ",": 20};
+const MAX_SENTENCES = 4;
+
+let words = START.slice(), nStart = START.length, lastNew = false;
+const text = document.getElementById("text"), bars = document.getElementById("bars");
+const info = document.getElementById("info"), best = document.getElementById("best");
+
+function dist() {
+  const n = words.length;
+  const d = M[words[n - 2] + " " + words[n - 1]] || M[words[n - 1]] || FALLBACK;
+  const tot = Object.values(d).reduce((a, b) => a + b, 0);
+  return Object.entries(d).map(([t, p]) => [t, Math.round(100 * p / tot)]).sort((a, b) => b[1] - a[1]);
+}
+function isPunct(w) { return w === "." || w === ","; }
+function finished() { return words.slice(nStart).filter(w => w === ".").length >= MAX_SENTENCES; }
+
+function render() {
+  let html = "";
+  words.forEach((w, i) => {
+    const sep = (i === 0 || isPunct(w)) ? "" : " ";
+    const isNew = lastNew && i === words.length - 1;
+    html += sep + (isNew ? `<span class="new">${w}</span>` : w);
+  });
+  const done = finished();
+  text.innerHTML = html + (done ? "" : '<span class="cursor"></span>');
+  best.disabled = done;
+  if (done) { bars.innerHTML = ""; info.textContent = ""; return; }
+  const D = dist();
+  bars.innerHTML = D.map(([t, p], i) =>
+    `<div class="lab" data-i="${i}">${t}</div><div class="track" data-i="${i}"><div class="fill" style="width:${p}%"></div></div><div class="pct" data-i="${i}">${p} %</div>`
+  ).join("");
+  bars.querySelectorAll("[data-i]").forEach(el => {
+    const i = +el.dataset.i;
+    el.onclick = () => choose(D[i][0]);
+    el.onmouseenter = () => bars.querySelectorAll(`[data-i="${i}"]`).forEach(e => e.classList.add("hover"));
+    el.onmouseleave = () => bars.querySelectorAll(`[data-i="${i}"]`).forEach(e => e.classList.remove("hover"));
+  });
+  info.textContent = `${words.length - nStart} token(s) généré(s)`;
+}
+function choose(t) { words.push(t); lastNew = true; render(); }
+best.onclick = () => choose(dist()[0][0]);
+document.getElementById("undo").onclick = () => { if (words.length > nStart) { words.pop(); lastNew = false; render(); } };
+document.getElementById("reset").onclick = () => { words = START.slice(); lastNew = false; render(); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" && !best.disabled) best.click(); });
+render();
+</script>
+</body>
+</html>

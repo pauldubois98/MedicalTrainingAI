@@ -5,8 +5,9 @@ vendor/
 
 # Generated slides, figures and RAG corpus
 slides.html
+slides-fr.html
 figures/
-demos/rag_corpus.js
+demos/rag_corpus*.js
 
 # Handouts (sources are the .md files)
 workshops/*.html

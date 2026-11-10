@@ -22,6 +22,20 @@ BLUE = "#005a91"        # couleur secondaire (biais, corpus…)
 BLUE_L = "#e6f2fa"
 WHITE = "#ffffff"
 
+# Language of the text drawn (see figures.py): "en", or "fr" with the table figures_fr.FR
+LANG = {"code": "en", "table": {}, "missing": set()}
+
+
+def tr(s):
+    """Translates a figure string into the current language (unchanged in English)."""
+    if LANG["code"] == "en" or not isinstance(s, str) or type(s).__name__ == "NoTr":
+        return s
+    if s in LANG["table"]:
+        return LANG["table"][s]
+    if any(c.isalpha() for c in s):
+        LANG["missing"].add(s)
+    return s
+
 
 class SVG:
     def __init__(self, w, h):
@@ -33,7 +47,7 @@ class SVG:
 
     def text(self, x, y, s, fs=34, anchor="middle", color=INK, weight="normal",
              italic=False, lh=1.25):
-        lines = str(s).split("\n")
+        lines = str(tr(s)).split("\n")
         y0 = y - (len(lines) - 1) * fs * lh / 2
         style = "font-style:italic;" if italic else ""
         spans = "".join(

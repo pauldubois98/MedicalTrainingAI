@@ -32,6 +32,12 @@ One-day hands-on training for teachers and educators in healthcare and medicine:
 | Hand hygiene course notes | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/hand_hygiene_course_notes.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/hand_hygiene_course_notes.html) |
 | Diabetes course notes | [PDF](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/diabetes_course_notes.pdf) | [web](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/diabetes_course_notes.html) |
 
+**Version française** (all resources also exist in French, with the suffix `-fr`): [site](https://pauldubois98.github.io/MedicalTrainingAI/index-fr.html) · [slides](https://pauldubois98.github.io/MedicalTrainingAI/slides-fr.html)
+
+- Démonstrations : [réseau de neurones](https://pauldubois98.github.io/MedicalTrainingAI/demos/network-fr.html) · [entraînement](https://pauldubois98.github.io/MedicalTrainingAI/demos/training-fr.html) · [lettres](https://pauldubois98.github.io/MedicalTrainingAI/demos/letters-fr.html) · [token par token](https://pauldubois98.github.io/MedicalTrainingAI/demos/token-fr.html) · [température](https://pauldubois98.github.io/MedicalTrainingAI/demos/temperature-fr.html) · [contexte](https://pauldubois98.github.io/MedicalTrainingAI/demos/context-fr.html) · [RAG](https://pauldubois98.github.io/MedicalTrainingAI/demos/rag-fr.html) · [agent](https://pauldubois98.github.io/MedicalTrainingAI/demos/agent-fr.html)
+- Fiches : [préparation](https://pauldubois98.github.io/MedicalTrainingAI/workshops/00_setup-fr.pdf) · [atelier 1](https://pauldubois98.github.io/MedicalTrainingAI/workshops/01_search_memory-fr.pdf) · [atelier 2](https://pauldubois98.github.io/MedicalTrainingAI/workshops/02_knowledge_base-fr.pdf) · [atelier 3](https://pauldubois98.github.io/MedicalTrainingAI/workshops/03_course_design-fr.pdf) · [aide-mémoire](https://pauldubois98.github.io/MedicalTrainingAI/workshops/04_cheat_sheet-fr.pdf)
+- Base de connaissances : [règlement des ECOS](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/osce_regulations_2026-fr.pdf) · [livret des stages](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/clinical_placement_handbook-fr.pdf) · [hygiène des mains](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/hand_hygiene_course_notes-fr.pdf) · [diabète](https://pauldubois98.github.io/MedicalTrainingAI/knowledge_base/diabetes_course_notes-fr.pdf)
+
 **Repository:** [source code](https://github.com/pauldubois98/MedicalTrainingAI) · [deployment runs (GitHub Actions)](https://github.com/pauldubois98/MedicalTrainingAI/actions)
 
 ## Programme
@@ -58,6 +64,8 @@ One-day hands-on training for teachers and educators in healthcare and medicine:
 
 ```
 slides.md            source of the slides (pandoc markdown)  → slides.html
+slides-fr.md         French slides                           → slides-fr.html
+figures_fr.py        French text of the diagrams              → figures/*-fr.svg
 theme.css            slide theme
 figures.py, svgkit.py  diagrams → figures/*.svg
 demos/               interactive demos (offline, no API key needed)
@@ -65,13 +73,15 @@ demos/               interactive demos (offline, no API key needed)
   context            same question with and without a document in the context
   rag                real keyword search (BM25) over the knowledge base, top-k, prompt, grounded answer
   agent              step-by-step agent loop (literature search, admin email with human approval, knowledge base)
-make_corpus.py       knowledge_base/*.md → demos/rag_corpus.js
+make_corpus.py       knowledge_base/*.md → demos/rag_corpus.js (and *-fr.md → rag_corpus-fr.js)
 workshops/           handouts: 00 setup (send before the day), 01–03 workshops, 04 cheat sheet
 knowledge_base/      4 documents of the fictional "St Aldric School of Health Sciences" (used by the demos and Workshop 2)
 handout.css          style of the handouts
-index.md             landing page of the website
+index.md             landing page of the website (index-fr.md in French)
 .github/workflows/   GitHub Actions: build and deploy to GitHub Pages
 ```
+
+**French:** every resource has a French version next to it, named `name-fr.ext` (slides, demos, figures, handouts, knowledge base, landing page). When you change an English file, update its `-fr` twin too.
 
 Only sources are committed: `slides.html`, `figures/`, `demos/rag_corpus.js`, the handout HTML/PDFs and `vendor/` (reveal.js) are generated (see `.gitignore`).
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>L'importance du contexte</title>
+<!-- Same question, with or without a document in the model's context.
+     Answers are pre-written (no real model is called), so the demo always works offline. -->
+<link rel="stylesheet" href="common.css">
+<style>
+  body { gap: 8px; }
+  select { font: inherit; font-size: 21px; padding: 6px; border-radius: 8px; max-width: 640px; }
+  .cols { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 0; }
+  .panel { border-radius: 16px; padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .panel h3 { margin: 0; font-size: 20px; color: var(--muted); font-weight: normal; }
+  .panel h3 b { color: var(--ink); }
+  #ctxPanel { background: var(--light); }
+  #ansPanel { border: 3px solid var(--light); }
+  .msg { font-size: 19px; line-height: 1.4; border-radius: 10px; padding: 8px 12px; background: #fff; }
+  .msg .who { font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; }
+  .msg.sys { color: var(--muted); font-style: italic; }
+  .msg.doc { background: var(--violet-l); border: 2px dashed var(--violet); overflow: auto; max-height: 230px;
+    font-size: 16px; animation: pop .4s ease; }
+  .msg.doc .who { color: var(--violet); }
+  .msg.q { background: var(--orange-l); }
+  #answer { font-size: 22px; line-height: 1.45; flex: 1; overflow: auto; }
+  #answer .cursor { display: inline-block; width: 11px; height: 22px; background: var(--violet); vertical-align: middle; margin-left: 4px; animation: blink 1s infinite; }
+  #badge { font-size: 19px; font-weight: bold; border-radius: 10px; padding: 8px 12px; display: none; }
+  #badge.bad { display: block; background: #fde0ef; color: var(--red); }
+  #badge.meh { display: block; background: var(--orange-l); color: var(--orange-d); }
+  #badge.good { display: block; background: #d5f1ef; color: var(--green); }
+  .tokcount { font-size: 15px; color: var(--muted); }
+  @keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  #toggle.on { background: var(--violet); color: #fff; }
+  mark { background: #ffcbab; border-radius: 4px; padding: 0 2px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <select id="scenario"></select>
+  <button id="toggle" class="alt">📄 Ajouter au contexte</button>
+  <button id="go">Générer ▶</button>
+</div>
+<div class="cols">
+  <div class="panel" id="ctxPanel">
+    <h3><b>Ce que voit le modèle</b> (son contexte) <span class="tokcount" id="tokcount"></span></h3>
+    <div id="ctx" style="display:flex; flex-direction:column; gap:8px; min-height:0; overflow:auto"></div>
+  </div>
+  <div class="panel" id="ansPanel">
+    <h3><b>La réponse du modèle</b></h3>
+    <div id="answer"></div>
+    <div id="badge"></div>
+  </div>
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    label: "1. Notre nouveau règlement des ECOS (adopté en oct. 2026)",
+    q: "Combien y a-t-il de stations à notre ECOS 2026–2027, et que faut-il pour le valider ?",
+    docName: "Règlement des ECOS 2026–2027 (École Saint-Aldric, fictive), v3, 2 octobre 2026",
+    doc: `<b>3. Format de l'examen.</b> L'ECOS comporte <mark>10 stations</mark>. Chaque station dure <mark>8 minutes</mark>, précédées de 2 minutes de lecture hors de la salle. Une station de repos supplémentaire est prévue dans chaque circuit. […]<br><br>
+<b>4. Conditions de réussite.</b> Pour valider l'ECOS, l'étudiant doit obtenir une <mark>note globale d'au moins 50 %</mark> et <mark>réussir au moins 7 des 10 stations</mark>. Une erreur critique de sécurité du patient à une station […] entraîne l'échec à cette station, quelle que soit la note obtenue.`,
+    without: "Votre ECOS comportera très probablement 12 stations de 10 minutes chacune. Pour le valider, il faut en général une note globale d'au moins 60 %, et ne pas échouer à plus de deux stations.",
+    withoutBadge: ["bad", "⚠ Inventé : c'est plausible, mais tous les chiffres sont faux. Le modèle n'a jamais vu ce document."],
+    with: "D'après le règlement 2026–2027 (§3 et §4), l'ECOS comporte 10 stations de 8 minutes, précédées de 2 minutes de lecture. Pour le valider, il faut une note globale d'au moins 50 % et réussir au moins 7 des 10 stations. Attention : une erreur critique de sécurité du patient fait échouer la station, quelle que soit la note.",
+    withBadge: ["good", "✓ Correct, et la source est citée (§3, §4). Vous pouvez vérifier."],
+  },
+  {
+    label: "2. Piqûre accidentelle en stage",
+    q: "Je suis étudiante en stage et je viens de me piquer avec une aiguille. Que dois-je faire ?",
+    docName: "Livret des stages cliniques 2026–2027 (École Saint-Aldric, fictive), §5",
+    doc: `<b>5. Piqûres et accidents d'exposition au sang.</b> En cas de piqûre ou de coupure : faire saigner doucement la plaie, la laver à l'eau courante et au savon, ne pas frotter ni sucer la plaie, et la couvrir d'un pansement imperméable. <mark>Signaler immédiatement l'accident au responsable du service</mark> et <mark>se rendre sans délai au service de santé au travail (ou aux urgences en dehors des heures ouvrables)</mark>, car le traitement post-exposition est d'autant plus efficace qu'il est commencé tôt, <mark>idéalement dans l'heure</mark>. <mark>Remplir une déclaration d'incident le jour même.</mark>`,
+    without: "Faites saigner la plaie, lavez-la à l'eau et au savon et couvrez-la. Signalez l'accident à votre encadrant et suivez la procédure de la médecine du travail de votre hôpital : vous aurez peut-être besoin d'une prise de sang ou d'un traitement préventif.",
+    withoutBadge: ["meh", "≈ Correct dans l'ensemble, mais générique : il ne connaît pas la procédure de votre école."],
+    with: "Agissez tout de suite : faites saigner doucement la plaie, lavez-la à l'eau courante et au savon (sans frotter ni sucer) et couvrez-la. Signalez-le immédiatement au responsable du service, puis allez directement au service de santé au travail, ou aux urgences en dehors des heures ouvrables : le traitement post-exposition est plus efficace dans l'heure. Enfin, remplissez une déclaration d'incident aujourd'hui (Livret §5).",
+    withBadge: ["good", "✓ Propre à votre établissement : les bons interlocuteurs, les bons délais, les bons documents."],
+  },
+  {
+    label: "3. Connaissance générale : traitement de 1re intention du diabète de type 2",
+    q: "Quel est le médicament habituel de première intention du diabète de type 2 ?",
+    docName: "Notes de cours : l'essentiel sur le diabète (École Saint-Aldric, fictive), §3",
+    doc: `<b>3. Traitement de première intention du diabète de type 2.</b> Les mesures hygiéno-diététiques (alimentation, activité physique, perte de poids) sont la base du traitement. Quand un traitement médicamenteux est nécessaire, <mark>la metformine est habituellement le médicament de première intention</mark>, sauf contre-indication ou intolérance. Les effets indésirables digestifs sont fréquents en début de traitement.`,
+    without: "La metformine est habituellement le médicament de première intention du diabète de type 2, en complément des mesures hygiéno-diététiques (alimentation, activité physique, perte de poids), sauf contre-indication ou intolérance.",
+    withoutBadge: ["good", "✓ Correct sans aucun document : c'est une connaissance stable, très présente dans les données d'entraînement."],
+    with: "La metformine, associée aux mesures hygiéno-diététiques (alimentation, activité physique, perte de poids), sauf contre-indication ou intolérance. Vos notes de cours ajoutent que les effets indésirables digestifs sont fréquents en début de traitement (§3).",
+    withBadge: ["good", "✓ Même réponse, mais avec une source. Ajouter du contexte ne fait pas de mal."],
+  },
+];
+
+const sel = document.getElementById("scenario"), toggle = document.getElementById("toggle"), go = document.getElementById("go");
+const ctx = document.getElementById("ctx"), answer = document.getElementById("answer"), badge = document.getElementById("badge");
+SCENARIOS.forEach((s, i) => sel.add(new Option(s.label, i)));
+let withDoc = false, timer = null;
+
+function renderCtx() {
+  const S = SCENARIOS[sel.value];
+  let h = `<div class="msg sys"><span class="who">Instructions</span>Tu es un assistant au service du personnel et des étudiants.</div>`;
+  if (withDoc) h += `<div class="msg doc"><span class="who">📄 Document : ${S.docName}</span>${S.doc}</div>`;
+  h += `<div class="msg q"><span class="who">Question</span>${S.q}</div>`;
+  ctx.innerHTML = h;
+  const words = (withDoc ? S.doc.replace(/<[^>]+>/g, "") : "").split(/\s+/).length + S.q.split(/\s+/).length + 10;
+  document.getElementById("tokcount").textContent = `≈ ${Math.round(words * 1.3)} tokens`;
+  toggle.classList.toggle("on", withDoc);
+  toggle.textContent = withDoc ? "📄 Retirer du contexte" : "📄 Ajouter au contexte";
+  stop(); answer.innerHTML = ""; badge.className = ""; badge.style.display = "";
+}
+function stop() { if (timer) clearInterval(timer); timer = null; go.disabled = false; }
+function generate() {
+  stop();
+  const S = SCENARIOS[sel.value], words = (withDoc ? S.with : S.without).split(" ");
+  const [cls, txt] = withDoc ? S.withBadge : S.withoutBadge;
+  let i = 0; badge.className = ""; go.disabled = true;
+  timer = setInterval(() => {
+    i++;
+    answer.innerHTML = words.slice(0, i).join(" ") + (i < words.length ? '<span class="cursor"></span>' : "");
+    if (i >= words.length) { stop(); badge.className = cls; badge.textContent = txt; }
+  }, 70);
+}
+sel.onchange = () => { sel.blur(); renderCtx(); };
+toggle.onclick = () => { withDoc = !withDoc; toggle.blur(); renderCtx(); };
+go.onclick = () => { go.blur(); generate(); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" && !go.disabled) generate(); });
+renderCtx();
+</script>
+</body>
+</html>

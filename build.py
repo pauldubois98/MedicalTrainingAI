@@ -7,6 +7,10 @@
   4. handouts: workshops/*.md, knowledge_base/*.md  →  .html (+ .pdf with --pdf, via headless Chrome)
   5. with --site: _site/ (what GitHub Pages serves)
 
+Every resource exists in English (name.ext) and French (name-fr.ext): slides-fr.md → slides-fr.html,
+figures/*-fr.svg, demos/*-fr.html, demos/rag_corpus-fr.js, workshops/*-fr.md, knowledge_base/*-fr.md,
+index-fr.md.
+
 reveal.js is downloaded into vendor/ on the first run.
 
 Usage:  python3 build.py [--pdf] [--site]
@@ -46,12 +50,16 @@ def fetch_reveal():
     print("→ vendor/reveal.js", REVEAL_VERSION)
 
 
-def slides():
-    with open(os.path.join(HERE, "slides.md"), encoding="utf-8") as f:
+def lang_of(path):
+    return "fr" if path[:-3].endswith("-fr") else "en"
+
+
+def slides(name):
+    with open(os.path.join(HERE, name + ".md"), encoding="utf-8") as f:
         md = f.read()
     subprocess.run(
         ["pandoc", "-f", "markdown", "-t", "revealjs", "-s", "--slide-level=2",
-         "-o", os.path.join(HERE, "slides.html"),
+         "-o", os.path.join(HERE, name + ".html"),
          "-V", "revealjs-url=vendor/reveal.js",
          "-V", "theme=white",
          "-V", "width=1280", "-V", "height=720", "-V", "margin=0.04",
@@ -59,7 +67,7 @@ def slides():
          "-V", "center=false",
          "--css", "theme.css"],
         input=md, text=True, check=True, cwd=HERE)
-    print("→ slides.html")
+    print(f"→ {name}.html")
 
 
 def chrome():
@@ -78,7 +86,7 @@ def handouts(pdf):
             html = md[:-3] + ".html"
             css = os.path.relpath(os.path.join(HERE, "handout.css"), os.path.dirname(md))
             subprocess.run(["pandoc", md, "-s", "-o", html, "--css", css, "--embed-resources",
-                            "--metadata", "lang=en"], check=True, cwd=os.path.dirname(md))
+                            "--metadata", f"lang={lang_of(md)}"], check=True, cwd=os.path.dirname(md))
             print("→", os.path.relpath(html, HERE))
             if browser:
                 out = md[:-3] + ".pdf"
@@ -88,7 +96,7 @@ def handouts(pdf):
                 print("→", os.path.relpath(out, HERE))
 
 
-SITE_FILES = ["slides.html", "theme.css", "figures", "demos", "vendor/reveal.js/dist",
+SITE_FILES = ["slides.html", "slides-fr.html", "theme.css", "figures", "demos", "vendor/reveal.js/dist",
               "vendor/reveal.js/plugin"]
 
 
@@ -110,9 +118,10 @@ def site():
                     dst = os.path.join(out, os.path.relpath(f, HERE))
                     os.makedirs(os.path.dirname(dst), exist_ok=True)
                     shutil.copy2(f, dst)
-    subprocess.run(["pandoc", "index.md", "-s", "-o", os.path.join(out, "index.html"),
-                    "--css", "handout.css", "--embed-resources", "--metadata", "lang=en"],
-                   check=True, cwd=HERE)
+    for name in ("index", "index-fr"):
+        subprocess.run(["pandoc", name + ".md", "-s", "-o", os.path.join(out, name + ".html"),
+                        "--css", "handout.css", "--embed-resources", "--metadata", f"lang={lang_of(name + '.md')}"],
+                       check=True, cwd=HERE)
     print("→ _site/")
 
 
@@ -120,7 +129,8 @@ def main():
     fetch_reveal()
     subprocess.run([sys.executable, os.path.join(HERE, "figures.py")], check=True)
     subprocess.run([sys.executable, os.path.join(HERE, "make_corpus.py")], check=True)
-    slides()
+    slides("slides")
+    slides("slides-fr")
     handouts(pdf="--pdf" in sys.argv)
     if "--site" in sys.argv:
         site()

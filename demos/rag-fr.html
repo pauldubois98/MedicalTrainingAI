@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Génération augmentée par la recherche</title>
+<!-- Mini RAG pipeline: a real search (BM25) runs in the browser over the knowledge-base passages
+     (rag_corpus-fr.js, generated from knowledge_base/ by make_corpus.py).
+     The "meaning" mode is simulated with a synonym list; real systems use embeddings.
+     Answers to the preset questions are pre-written; no real model is called. -->
+<link rel="stylesheet" href="common.css">
+<script src="rag_corpus-fr.js"></script>
+<style>
+  body { gap: 8px; padding: 8px 16px; }
+  input[type=text] { font: inherit; font-size: 20px; padding: 6px 10px; border-radius: 10px; border: 2px solid var(--light); flex: 1; min-width: 300px; }
+  select { font: inherit; font-size: 17px; padding: 5px; border-radius: 8px; max-width: 250px; }
+  button { font-size: 19px; padding: 7px 16px; }
+  .seg button { border-radius: 0; background: var(--light); font-size: 16px; padding: 7px 12px; }
+  .seg button:first-child { border-radius: 10px 0 0 10px; } .seg button:last-child { border-radius: 0 10px 10px 0; }
+  .seg button.on { background: var(--violet); color: #fff; }
+  .seg { display: flex; }
+  .kctl { font-size: 17px; display: flex; align-items: center; gap: 6px; }
+  .kctl input { width: 110px; accent-color: var(--violet); }
+  .kctl b { color: var(--violet); font-size: 20px; min-width: 16px; }
+  .grid { flex: 1; display: grid; grid-template-columns: 330px 1fr 340px; gap: 12px; min-height: 0; }
+  .col { display: flex; flex-direction: column; gap: 6px; min-height: 0; border-radius: 14px; padding: 8px 10px; }
+  .col h3 { margin: 0; font-size: 17px; font-weight: normal; color: var(--muted); }
+  .col h3 b { color: var(--ink); }
+  .step { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: var(--orange); color: var(--ink);
+    text-align: center; font-weight: bold; line-height: 24px; font-size: 15px; margin-right: 4px; }
+  #kb { background: var(--light); }
+  #list { overflow: auto; display: flex; flex-direction: column; gap: 3px; }
+  .p { display: grid; grid-template-columns: 22px 1fr 54px; gap: 4px; align-items: center; font-size: 14.5px;
+    background: #fff; border-radius: 7px; padding: 3px 6px; border: 2px solid transparent; transition: all .3s; }
+  .p.top { border-color: var(--violet); background: var(--violet-l); }
+  .p .sec { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p .doc { color: var(--muted); font-size: 12px; display: block; }
+  .p .sc { height: 10px; background: var(--light); border-radius: 4px; overflow: hidden; position: relative; }
+  .p .sc i { display: block; height: 100%; background: var(--orange); }
+  .p.top .sc i { background: var(--violet); }
+  .p .rank { font-weight: bold; color: var(--violet); text-align: center; }
+  #prompt { background: #fff; border: 3px solid var(--light); }
+  #promptBody { overflow: auto; font-size: 15.5px; line-height: 1.35; display: flex; flex-direction: column; gap: 5px; }
+  .blk { border-radius: 8px; padding: 5px 9px; }
+  .blk .who { font-size: 11.5px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; }
+  .blk.sys { background: var(--light); font-style: italic; color: var(--muted); }
+  .blk.ps { background: var(--violet-l); }
+  .blk.ps .who { color: var(--violet); }
+  .blk.q { background: var(--orange-l); }
+  mark { background: #ffcbab; border-radius: 3px; padding: 0 1px; }
+  #ans { border: 3px solid var(--violet); }
+  #ansBody { overflow: auto; font-size: 18px; line-height: 1.42; }
+  #ansBody .cite { display: inline-block; background: var(--violet); color: #fff; border-radius: 6px; font-size: 12px;
+    font-weight: bold; padding: 0 5px; margin: 0 1px; vertical-align: 2px; }
+  #ansBody .miss { color: var(--red); background: #fde0ef; border-radius: 8px; padding: 4px 8px; display: block; margin: 4px 0; font-size: 14.5px; }
+  #ansBody p { margin: 0 0 6px; }
+  .hint { color: var(--muted); font-size: 15.5px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="row" style="gap:10px">
+  <select id="preset"></select>
+  <input type="text" id="q" placeholder="…ou tapez votre propre question">
+  <button id="ask">Chercher ▶</button>
+</div>
+<div class="row" style="gap:18px">
+  <div class="seg" title="Comment les passages sont associés à la question">
+    <button id="mKey" class="on">🔤 Mêmes mots</button><button id="mSem">💡 Même sens</button>
+  </div>
+  <div class="kctl">Passages envoyés au modèle : <input type="range" id="k" min="1" max="8" value="3"><b id="kval">3</b></div>
+  <span class="hint" id="modeHint"></span>
+</div>
+<div class="grid">
+  <div class="col" id="kb">
+    <h3><span class="step">1</span><b>Base de connaissances</b> : <span id="nP"></span> passages, classés</h3>
+    <div id="list"></div>
+  </div>
+  <div class="col" id="prompt">
+    <h3><span class="step">2</span><b>Ce que reçoit le modèle</b> (son contexte)</h3>
+    <div id="promptBody"></div>
+  </div>
+  <div class="col" id="ans">
+    <h3><span class="step">3</span><b>Réponse</b>, fondée sur les passages</h3>
+    <div id="ansBody"></div>
+  </div>
+</div>
+
+<script>
+// ------------------------------------------------------------------ questions d'exemple et réponses pré-écrites
+// Chaque phrase indique les passages dont elle a besoin ; s'il en manque un, la phrase est signalée comme manquante.
+const PRESETS = [
+  { q: "Que se passe-t-il si je rate l'ECOS parce que je suis malade ?", sentences: [
+      ["Si vous êtes absent, envoyez un certificat médical au service des examens dans les 72 heures.", ["osce-5"]],
+      ["Une absence justifiée ne compte pas comme une tentative : vous êtes automatiquement inscrit à la session de rattrapage.", ["osce-5"]],
+      ["La session de rattrapage a lieu les 14 et 15 juin 2027.", ["osce-2"]],
+      ["Sans certificat, l'absence compte comme un échec.", ["osce-5"]] ] },
+  { q: "Comment traiter une baisse de sucre chez un patient conscient ?", sentences: [
+      ["Donnez 15 à 20 g de glucides d'absorption rapide, par exemple des comprimés de glucose ou un petit verre de jus de fruits.", ["diab-5"]],
+      ["Recontrôlez la glycémie 10 à 15 minutes plus tard et recommencez si elle reste inférieure à 0,70 g/L.", ["diab-5"]],
+      ["Une fois la glycémie remontée, donnez une collation à glucides lents ou le repas suivant.", ["diab-5"]],
+      ["Surveillez les symptômes : sueurs, tremblements, palpitations ou confusion.", ["diab-4"]] ] },
+  { q: "Quand faut-il se laver les mains au savon plutôt qu'avec du gel ?", sentences: [
+      ["À l'eau et au savon quand les mains sont visiblement sales ou souillées par des liquides biologiques, et après être allé aux toilettes.", ["hyg-4"]],
+      ["Aussi en cas de suspicion de C. difficile, car l'alcool ne détruit pas les spores, et pendant les épidémies de norovirus.", ["hyg-4"]],
+      ["Sinon, la friction hydro-alcoolique est préférable : plus rapide (20 à 30 s) et mieux tolérée par la peau.", ["hyg-3"]] ] },
+  { q: "Puis-je utiliser ChatGPT pour m'aider à écrire mon analyse réflexive sur un patient ?", sentences: [
+      ["Le livret n'interdit pas les outils d'IA pour rédiger, mais vous ne devez jamais saisir d'informations permettant d'identifier un patient (nom, date de naissance, numéro de dossier, photographies) dans un outil d'IA public.", ["place-6"]],
+      ["Tout cas clinique utilisé dans vos travaux doit être entièrement anonymisé.", ["place-6"]] ] },
+  { q: "Où les étudiants peuvent-ils garer leur voiture ?", sentences: [], none:
+      "Je n'ai pas trouvé cette information dans la base de connaissances. Contactez l'administration de l'école." },
+];
+
+// ------------------------------------------------------------------ search
+// French: accents are removed before matching ("hypoglycémie" = "hypoglycemie"), elisions split ("l'ECOS" → "l ECOS").
+const norm = w => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const STOP = new Set(("a au aux avec ce ces cet cette dans de des du elle elles en et est etre il ils je j l la le les leur leurs " +
+  "lui ma mais me mes moi mon ne n nous on ou par pas pour qu que quel quelle quels quelles qui sa se si son sont sur ta te tes " +
+  "toi ton tu un une vos votre vous y d c s m t comment quand combien peut peux puis dois doit faut faire fait parce suis " +
+  "plutot chez mon ma mes sur tout toute tous").split(" "));
+const stem = w => w.length > 4 ? w.replace(/(es|s|x)$/, "") : w;
+const words = s => norm(s).replace(/[^a-z0-9\-\s]/g, " ").split(/\s+/).filter(w => w && !STOP.has(w));
+const terms = s => words(s).map(stem);
+
+// "Same meaning" mode: a hand-made synonym list stands in for embeddings.
+const SYN = {
+  "baisse de sucre": "hypoglycemie glycemie", "sucre": "glycemie glucides glucose", "hypo": "hypoglycemie",
+  "aiguille": "piqure exposition sang", "piquer": "piqure exposition sang", "piqure": "accidents exposition sang",
+  "examen": "ecos", "partiel": "ecos examen", "valider": "reussite note", "reussir": "reussite note", "echec": "reussite rattrapage",
+  "repasser": "rattrapage", "malade": "absence absent certificat medical", "rate": "absence absent rattrapage",
+  "rater": "absence absent rattrapage", "laver": "lavage savon", "gel": "solution hydro-alcoolique friction",
+  "chatgpt": "ia chatbots outils", "ia": "chatbots outils", "confidentialite": "confidentialite identifier",
+  "reflexive": "carnets reflexifs travaux", "bijou": "bijoux alliance", "bague": "bijoux alliance", "montre": "montres connectees",
+  "telephone": "telephones portables", "medicament": "traitement medicamenteux", "tenue": "tenue professionnelle",
+  "dyslexie": "amenagements handicap", "handicap": "amenagements", "notes": "resultats note", "tuteur": "tuteur encadrement",
+  "danger": "securite signaler", "diagnostiquer": "diagnostic hba1c", "garer": "parking stationnement", "voiture": "parking stationnement",
+};
+function queryTerms(q, semantic) {
+  const base = terms(q).map(t => [t, 1]);
+  if (!semantic) return base;
+  const low = " " + norm(q).replace(/['’?]/g, " ") + " ", extra = [];
+  for (const k in SYN) if (low.includes(" " + k + " "))
+    terms(SYN[k]).forEach(t => extra.push([t, 0.8]));
+  return base.concat(extra);
+}
+const DOCS = CORPUS.map(p => terms(p.doc + " " + p.section + " " + p.text));
+const N = DOCS.length, avgdl = DOCS.reduce((s, d) => s + d.length, 0) / N;
+const df = {}; DOCS.forEach(d => new Set(d).forEach(t => df[t] = (df[t] || 0) + 1));
+function bm25(qt) {   // classic BM25 (k1 = 1.2, b = 0.75)
+  return DOCS.map(d => {
+    let s = 0;
+    const seen = new Set();
+    for (const [t, w] of qt) {
+      if (seen.has(t)) continue; seen.add(t);
+      const f = d.filter(x => x === t).length;
+      if (!f) continue;
+      const idf = Math.log(1 + (N - df[t] + .5) / (df[t] + .5));
+      s += w * idf * f * 2.2 / (f + 1.2 * (1 - .75 + .75 * d.length / avgdl));
+    }
+    return s;
+  });
+}
+
+// ------------------------------------------------------------------ UI
+const $ = id => document.getElementById(id);
+const preset = $("preset"), q = $("q"), kIn = $("k");
+preset.add(new Option("Questions d'exemple…", ""));
+PRESETS.forEach((p, i) => preset.add(new Option(p.q, i)));
+$("nP").textContent = N;
+let semantic = false, ranked = null, curPreset = null;
+
+function highlight(text, qt) {
+  const set = new Set(qt.map(x => x[0]));
+  return text.replace(/[\p{L}0-9\-]+/gu, w => set.has(stem(norm(w))) ? `<mark>${w}</mark>` : w);
+}
+
+function render() {
+  const k = +kIn.value; $("kval").textContent = k;
+  $("modeHint").textContent = semantic ? "Simulé ici avec une liste de synonymes. Les vrais systèmes utilisent des « embeddings »." : "";
+  const query = q.value.trim();
+  const qt = query ? queryTerms(query, semantic) : [];
+  const scores = query ? bm25(qt) : CORPUS.map(() => 0);
+  const order = [...CORPUS.keys()].sort((a, b) => scores[b] - scores[a] || a - b);
+  const max = Math.max(1e-9, ...scores);
+  const top = query ? order.slice(0, k).filter(i => scores[i] > 0) : [];
+  // 1. ranked list
+  $("list").innerHTML = order.map((i, r) => {
+    const p = CORPUS[i], isTop = top.includes(i);
+    return `<div class="p${isTop ? " top" : ""}"><span class="rank">${isTop ? r + 1 : p.icon}</span>
+      <span class="sec">${p.section}<span class="doc">${p.doc}</span></span>
+      <span class="sc" title="score ${scores[i].toFixed(2).replace(".", ",")}"><i style="width:${100 * scores[i] / max}%"></i></span></div>`;
+  }).join("");
+  // 2. prompt
+  let h = `<div class="blk sys"><span class="who">Instructions</span>Réponds à la question en utilisant uniquement les passages ci-dessous. Cite-les sous la forme [1], [2]… Si la réponse ne s'y trouve pas, dis-le.</div>`;
+  if (!query) h += `<div class="hint">Choisissez ou tapez une question, puis cliquez sur Chercher.</div>`;
+  else if (!top.length) h += `<div class="blk ps"><span class="who">Passages</span>(aucun passage ne contient un mot de la question)</div>`;
+  top.forEach((i, r) => {
+    const p = CORPUS[i];
+    h += `<div class="blk ps"><span class="who">[${r + 1}] ${p.doc}, ${p.section}</span>${highlight(p.text, qt)}</div>`;
+  });
+  if (query) h += `<div class="blk q"><span class="who">Question</span>${query.replace(/</g, "&lt;")}</div>`;
+  $("promptBody").innerHTML = h;
+  // 3. answer
+  const ids = top.map(i => CORPUS[i].id);
+  const P = curPreset !== null && PRESETS[curPreset].q === query ? PRESETS[curPreset] : null;
+  let a = "";
+  if (!query) a = `<div class="hint">La réponse apparaîtra ici.</div>`;
+  else if (!P) a = `<div class="hint">Avec un vrai modèle d'IA, la réponse serait maintenant rédigée à partir du ou des ${top.length} passage(s) de la colonne du milieu, avec des citations.<br><br>
+    À vérifier : ces passages contiennent-ils vraiment la réponse ? Sinon, le modèle ne peut que deviner, ou (mieux) dire qu'il ne sait pas.</div>`;
+  else if (P.none) a = `<p>${P.none}</p><div class="hint">Un modèle bien paramétré le dit au lieu d'inventer une réponse.</div>`;
+  else {
+    let missing = 0;
+    P.sentences.forEach(([s, need]) => {
+      if (need.every(id => ids.includes(id)))
+        a += s + " " + need.map(id => `<span class="cite">${ids.indexOf(id) + 1}</span>`).join("") + " ";
+      else { missing++; a += `<span class="miss">⚠ Information manquante : le passage nécessaire (${need.map(id => CORPUS.find(p => p.id === id).section).join(", ")}) n'a pas été retrouvé.</span>`; }
+    });
+    a = `<p>${a}</p>`;
+    if (missing) a += `<div class="hint">Essayez d'envoyer plus de passages, ou passez en « Même sens ».</div>`;
+  }
+  $("ansBody").innerHTML = a;
+}
+function search() { render(); $("ask").blur(); }
+preset.onchange = () => { if (preset.value === "") return; curPreset = +preset.value; q.value = PRESETS[curPreset].q; preset.blur(); render(); };
+q.oninput = () => { curPreset = PRESETS.findIndex(p => p.q === q.value.trim()); if (curPreset < 0) curPreset = null; };
+q.onkeydown = e => { if (e.key === "Enter") search(); };
+$("ask").onclick = search;
+kIn.oninput = render;
+$("mKey").onclick = () => { semantic = false; $("mKey").classList.add("on"); $("mSem").classList.remove("on"); render(); };
+$("mSem").onclick = () => { semantic = true; $("mSem").classList.add("on"); $("mKey").classList.remove("on"); render(); };
+render();
+</script>
+</body>
+</html>

@@ -6,6 +6,8 @@ title: "AI Tools for Healthcare Educators"
 
 One-day hands-on training: how modern AI works, and how to use it for literature searches, knowledge bases and course design.
 
+*[Version française](index-fr.html)*
+
 ## Slides and demos
 
 - **[Slides](slides.html)** (press `F` for full screen)

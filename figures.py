@@ -6,13 +6,22 @@ Part 1 diagrams are adapted from the LibraryConference talk (translated, medical
 import os
 import numpy as np
 from svgkit import *
+from svgkit import LANG, tr
+from figures_fr import FR, SAME
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures")
 os.makedirs(OUT, exist_ok=True)
 
 
 def out(name):
+    """figures/name.svg in English, figures/name-fr.svg in French."""
+    if LANG["code"] != "en":
+        name = name.replace(".svg", f"-{LANG['code']}.svg")
     return os.path.join(OUT, name)
+
+
+def fr():
+    return LANG["code"] == "fr"
 
 
 # ================================================================ Part 1: how AI works
@@ -132,10 +141,17 @@ def training_loop():
 
 def tokens_split():
     s = SVG(1600, 640)
-    phrase = "Paracetamol reduces fever."
+    if fr():
+        phrase = "Le paracétamol réduit la fièvre."
+        words = ["Le", "paracétamol", "réduit", "la", "fièvre", "."]
+        toks = ["Le", " par", "acét", "amol", " réduit", " la", " fiè", "vre", "."]
+    else:
+        phrase = "Paracetamol reduces fever."
+        words = ["Paracetamol", "reduces", "fever", "."]
+        toks = ["Par", "acet", "amol", " reduces", " fever", "."]
     rows = [("Characters", list(phrase), LIGHT, 42),
-            ("Words", ["Paracetamol", "reduces", "fever", "."], ORANGE_L, None),
-            ("Tokens", ["Par", "acet", "amol", " reduces", " fever", "."], VIOLET_L, None)]
+            ("Words", words, ORANGE_L, None),
+            ("Tokens", toks, VIOLET_L, None)]
     x_start, x_end = 260, 1420
     for r, (lab, units, col, fixed_w) in enumerate(rows):
         y = 50 + r * 150
@@ -147,7 +163,7 @@ def tokens_split():
         x = x_start
         for u, L in zip(units, lens):
             w = avail * L / sum(lens)
-            s.box(x, y, w, 90, u.replace(" ", "␣"), fill=col, fs=34 if not fixed_w else 30, rx=10)
+            s.box(x, y, w, 90, NoTr(u.replace(" ", "␣")), fill=col, fs=34 if not fixed_w else 30, rx=10)
             x += w + gap
         s.text(1540, y + 45, str(n), fs=44, weight="bold", color=[MUTED, ORANGE_D, VIOLET][r])
     s.text(1540, 20, "units", fs=24, color=MUTED)
@@ -169,20 +185,22 @@ def softmax_T(logits, T):
 
 
 def temperature_static():
-    toks = ["fever", "cough", "fatigue", "headache", "muscle", "chills", "sore", "rash"]
+    toks = (["fièvre", "toux", "fatigue", "céphalées", "courbatures", "frissons", "rhinite", "éruption"] if fr()
+            else ["fever", "cough", "fatigue", "headache", "muscle", "chills", "sore", "rash"])
     probs0 = np.array([0.55, 0.21, 0.10, 0.06, 0.04, 0.025, 0.01, 0.005])
     logits = np.log(probs0)
     s = SVG(1600, 700)
-    s.text(800, 40, "“The most common symptom of flu is …”", fs=40, italic=True, color=MUTED)
+    s.text(800, 40, NoTr("« Le symptôme le plus fréquent de la grippe : … »" if fr()
+                         else "“The most common symptom of flu is …”"), fs=40, italic=True, color=MUTED)
     for k, (T, lab) in enumerate([(0.3, "Low temperature (0.3)"), (1.0, "Normal (1)"), (2.5, "High (2.5)")]):
         p = softmax_T(logits, T)
         x0 = 40 + k * 520
         s.text(x0 + 250, 110, lab, fs=32, weight="bold", color=[ORANGE_D, INK, VIOLET][k])
         for i, t in enumerate(toks):
             y = 160 + i * 64
-            s.text(x0 + 140, y + 22, t, fs=30, anchor="end")
+            s.text(x0 + 140, y + 22, NoTr(t), fs=30, anchor="end")
             s.rect(x0 + 155, y, 300 * p[i] + 2, 48, fill=[ORANGE, MUTED, VIOLET][k], rx=6)
-            s.text(x0 + 165 + 300 * p[i], y + 22, f"{100 * p[i]:.0f}%", fs=26, anchor="start", color=MUTED)
+            s.text(x0 + 165 + 300 * p[i], y + 22, f"{100 * p[i]:.0f} %" if fr() else f"{100 * p[i]:.0f}%", fs=26, anchor="start", color=MUTED)
     s.save(out("temperature.svg"))
 
 
@@ -377,19 +395,28 @@ def fake_reference():
     s.save(out("fake_reference.svg"))
 
 
+class NoTr(str):
+    """A string that is already in the right language (not looked up in figures_fr.FR)."""
+
+
 if __name__ == "__main__":
-    cats_ml()
-    neuron()
-    scale_params()
-    training_loop()
-    tokens_split()
-    temperature_static()
-    chat_as_text()
-    knowledge_cutoff()
-    manual_context()
-    rag_pipeline()
-    chatbot_vs_agent()
-    human_vs_agent()
-    knowledge_sources()
-    fake_reference()
+    for lang, table in [("en", {}), ("fr", FR)]:
+        LANG.update(code=lang, table=table, missing=set())
+        cats_ml()
+        neuron()
+        scale_params()
+        training_loop()
+        tokens_split()
+        temperature_static()
+        chat_as_text()
+        knowledge_cutoff()
+        manual_context()
+        rag_pipeline()
+        chatbot_vs_agent()
+        human_vs_agent()
+        knowledge_sources()
+        fake_reference()
+        LANG["missing"] -= SAME
+        if LANG["missing"]:
+            print(f"[{lang}] not translated:", sorted(LANG["missing"]))
     print("figures generated in", OUT)
